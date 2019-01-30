@@ -1,0 +1,62 @@
+Konfigurasi System: -> Done
+Tambah entry 
+	-Auto Proses = *ya -> Muncul Entryan jam dan Menit
+	-Audit trail = *Radiobutton (All,Insert Update Delete)
+			-All Semua Aktifitas
+
+
+Daftar	Menu:
+
+	100000	General Setup:
+	100001	Pemeliharaan User -> Done
+	100002	Pemeliharaan Role -> Done
+	100003	Pemeliharaan Menu -> Done
+	100004	Pendaftaran Form -> Done
+	100005	Pemeliharaan Role Menu -> Done
+	100006	Pemeliharaan Akun
+	100007	Konfigurasi Cabang
+	100008	Pemeliharaan Pengumuman
+	100009	Konfigurasi System
+	100010	Pemeliharaan User Role Menu
+	100011	Pemeliharaan Privilege Menu
+
+	200000	Parameter Setup:
+	200004	Konfigurasi Group Parameter
+	200005	Konfigurasi Parameter
+
+	300000	Maintenance:
+	300001	Kredit Modifikasi
+	300002	Kredit Impair Asset
+	300003	Penempatan Pada Bank Lain
+	300004	Surat Berharga
+	300005	Bank Garansi
+
+	400000	Reporting:
+	400001	PD Lifetime
+	400002	LGD
+	400003	ECL PD LGD
+	400004	ECL Longgar Tarik
+	400005	ECL Kredit Impair Asset
+	400006	Neraca
+	400007	Laba Rugi
+	400008	Nominatif Kredit
+	400009	Log Jurnal Recalculated
+	400010	Rincian COA
+	400011	ECL Bank Garansi
+	400012	ECL Surat Berharga
+	400013	ECL Penempatan Pada Bank Lain
+	400014	Trend Macro
+
+	500000	Tools:
+	500001	Simulasi Angsuran
+	500002	Cut Off
+	500003	ECL Scenario
+	500004	Create Cash Flow
+	500005	Calculate PD Unconditional
+	500006	Calculate LGD
+	500007	Calculate PD Conditional
+	500008	Monitoring Proses
+	500009	SPPI Test
+
+
+		
