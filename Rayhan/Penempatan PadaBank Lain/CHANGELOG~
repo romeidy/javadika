@@ -1,0 +1,4 @@
+30-01-2019:
+*Fix Bug button save : validasi tidak berjalan dengan semestinya. 
+*Fix alignment pada listbox : nominal alignment ke kanan. 
++Implementasi check Privilege untuk membatasi kegiatan user.

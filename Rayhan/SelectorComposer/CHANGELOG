@@ -1,0 +1,6 @@
+CHANGELOG 
+30-01-2019 : 
++ Penambahan method checkPrivDelete/Update/Insert : 
+	Untuk mengecek hak dari user dalam melakukan sesuatu. 
++ Penambahan method doLogAktifitas : 
+	Untuk insert ke table log untuk merekam setiap kegiatan user (membuka menu, melakukan insert, update, dan delete)

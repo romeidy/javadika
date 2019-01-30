@@ -1,0 +1,93 @@
+<?page title="" contentType="text/html;charset=UTF-8"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<zk>
+
+	<window id="wnd" title="" border="none" width="100%" hflex="true" vflex="true"
+		apply="${wndPenempatanBankLain}">
+
+						<grid>
+							<columns>
+								<column width="165px" />
+								<column />
+							</columns>
+							<rows>
+								<row>
+								<label value="Tanggal Posisi" />								
+								<datebox  format="dd-MM-yyyy" id="dtTglPosisi" disabled="true" />
+								</row>
+								<row>
+									<label value="Jenis Penempatan" />
+									<combobox id="cmbJnsPenempatan" width="260px"
+										disabled="false" 
+										/>
+								</row>
+								<row>
+									<label value="No. Rekening" />
+									<textbox id="txtNoRekening" width="160px" disabled="false" maxlength="20"  />
+								</row>
+								<row>
+									<label value="Tanggal Penanaman" />
+									<!-- <datebox id="dtTglPenanaman" format="dd-MM-yyyy" width="120px" disabled="false" /> -->
+								<datebox format="dd-MM-yyyy"  placeholder="dd-MM-yyyy" id="dtTglPenanaman"  />
+								</row>
+								<row>
+									<label value="Nama Bank" />
+									<textbox id="txtNamaBank" width="260px" disabled="false" maxlength="30"/>
+								</row>
+								<row>
+									<label value="Nominal" />
+									<decimalbox id="decNominal" format="#,##0.00" width="260px" maxlength="29" />
+								</row>
+								<row>
+									<label value="Tenor" />
+									<hbox>
+										<intbox id="inTenor" maxlength="4" width="50px" disabled="false" style="text-align:right"  />
+										<label value="Hari" />
+									</hbox>
+								</row>
+								<row>
+									<label value="Bunga" />
+									<hbox>
+									<decimalbox id="decBunga" width="80px" disabled="false" format="##0.0000" 
+									maxlength="8" style="text-align:right"/>
+									<label value="%"/> 
+									</hbox>								
+								</row>
+								<row>
+									<label value="Saldo Akhir" />
+									<decimalbox id="decSaldoAkhir"  format="#,##0.00" width="260px" maxlength="29" disabled="false" />
+								</row>
+								<row>
+									<label/>
+									<hbox>
+										<button label="Save" width="65px" id="btnSave" />
+										<button label="Reset" width="65px" id="btnReset" />											
+									</hbox>
+								</row>							
+							</rows>
+						</grid>
+						<groupbox vflex="true">
+						<hbox>
+							<listbox id="list" hflex="true" vflex="true" mold="paging" pageSize="4">
+							<listhead>
+								<listheader label="Tanggal Posisi" align="center"/>
+								<listheader label="Jenis Penempatan" align="center"/>
+								<listheader label="No. Rekening" />
+								<listheader label="Tanggal Penanaman" align="center"/>
+								<listheader label="Nama Bank" />
+								<listheader label="Nominal" />
+								<listheader label="Tenor"  align="center"/>	
+								<listheader label="Bunga"  align="center"/>	
+								<listheader label="Saldo Akhir" />	
+							</listhead>
+						</listbox>
+						<vbox>
+								<button label="Edit" width="65px" id="btnEdit" />
+								<button label="Delete" width="65px" id="btnDelete" disabled="true"/>						
+						</vbox>
+						
+						</hbox>
+						
+						</groupbox>
+	</window>
+</zk>
