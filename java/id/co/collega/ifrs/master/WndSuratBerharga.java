@@ -14,7 +14,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -30,6 +32,8 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.common.FunctionUtils;
@@ -90,12 +94,15 @@ public class WndSuratBerharga extends SelectorComposer<Component>{
     DecimalFormat dfGlobal = new DecimalFormat("#,##0.00");
 	
 	@Wire Window wnd;
-
+	
 	Boolean onLoad = false;
+
+	String Aksi;
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
-
+		
 		cmbJenisSurat.addEventListener(Events.ON_CHANGE, new EventListener<Event>() {
 			public void onEvent(Event e) throws Exception {
 				doTable();
@@ -109,7 +116,9 @@ public class WndSuratBerharga extends SelectorComposer<Component>{
         });
 		btnDelete.addEventListener(Events.ON_CLICK, new EventListener() {
             public void onEvent(Event event) throws Exception {
-        		doDelete();
+            	if (checkPrivDelete()) {
+            		doDelete();	
+				}
             }
         });
 		btnEdit.addEventListener(Events.ON_CLICK, new EventListener() {
@@ -238,12 +247,16 @@ public class WndSuratBerharga extends SelectorComposer<Component>{
 			}
 		}
 	}
-	private void doSave(){
+	public void doSave(){
 		if (validation()){
 			if(onLoad){
-				doUpdate();
+				if (checkPrivUpdate()) {
+					doUpdate();	
+				}
 			}else{
-				doInsert();
+				if (checkPrivInsert()) {
+					doInsert();	
+				}
 			}
 		}
 	}
@@ -275,6 +288,8 @@ public class WndSuratBerharga extends SelectorComposer<Component>{
 			SB_MASTER.put("CRTUSER",auth.getUserDetails().getUserId());
 			SB_MASTER.put("CRTDATE", new Date());
 			masterService.insertData(SB_MASTER, "SB_MASTER");
+			Aksi = "Penambahan data "+ ComponentUtil.getValue(cmbJenisSurat) +", "+ComponentUtil.getValue(txtNoRekening);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data berhasil di-simpan.");
 			}
 		} catch (Exception e) {
@@ -311,6 +326,8 @@ public class WndSuratBerharga extends SelectorComposer<Component>{
 			SB_MASTER.put("UPDDATE", new Date());
 			SB_MASTER.put("PK", "TGL_POS,SBID,ACCNBR");
 			masterService.updateData(SB_MASTER, "SB_MASTER");
+			Aksi = "Perubahan data "+ ComponentUtil.getValue(cmbJenisSurat) +", "+ComponentUtil.getValue(txtNoRekening);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data berhasil di-update.");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -406,9 +423,9 @@ public class WndSuratBerharga extends SelectorComposer<Component>{
 						SB_MASTER.put("ACCNBR", ComponentUtil.getValue(txtNoRekening));
 						SB_MASTER.put("PK", "TGL_POS,SBID,ACCNBR");
 						masterService.deleteData(SB_MASTER, "SB_MASTER");
-						MessageBox.showInformation("Data berhasil di hapus");
-						masterService.deleteData(SB_MASTER, "SB_MASTER");
 						item.detach();
+						Aksi = "Penghapusan data "+ ComponentUtil.getValue(cmbJenisSurat) +", "+ComponentUtil.getValue(txtNoRekening);
+						doLogAktfitas(Aksi);
 						MessageBox.showInformation("Data Berhasil Dihapus");
 						doReset();
 					} else if (Messagebox.ON_CANCEL.equals(e.getName())) {

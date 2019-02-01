@@ -31,7 +31,9 @@ import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.event.UploadEvent;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -179,6 +181,8 @@ public class WndKreditImpairAsset extends SelectorComposer<Component>{
 	DTOMap cfg_sys=(DTOMap) GlobalVariable.getInstance().get("cfgsys");
 	private Date dateTglMulaiBaruOLD = null;
 	boolean isUpload=false;
+
+	String Aksi;
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -329,6 +333,8 @@ public class WndKreditImpairAsset extends SelectorComposer<Component>{
                 String ext = a[a.length - 1];
                 if (ext.equals("xls")) {
                     doReadFile(media.getStreamData());
+        			Aksi = "Upload jadwal angsur No Rekening"+ ComponentUtil.getValue(txtNoRekening);
+        			doLogAktfitas(Aksi);
                 } else {
                     MessageBox.showInformation("File excel harus dalam format Microsoft Office 2003");
                 }
@@ -673,6 +679,8 @@ public class WndKreditImpairAsset extends SelectorComposer<Component>{
 					FunctionUtils.getDigitAt(tipeBungaBaru.getInt("TYPEINT"), 1),
 					new BigDecimal(irrBaru));
 			doSetAngsur(listAngsuran);
+			Aksi = "Generate Arus Kas baru No Rekening "+ ComponentUtil.getValue(txtNoRekening);
+			doLogAktfitas(Aksi);
 		}
 	}
 	

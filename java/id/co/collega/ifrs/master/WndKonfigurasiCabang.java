@@ -20,7 +20,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -34,6 +36,7 @@ import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Textbox;
 
 import com.jet.gand.component.CIPDateTextZk;
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.common.JdbcTemplate;
@@ -88,11 +91,13 @@ public class WndKonfigurasiCabang extends SelectorComposer<Component> {
 	private List<DTOMap> listDto = new ArrayList<DTOMap>();
 
 	private List<DTOMap> listData;
+	
+	String Aksi;
 
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-
+		
 //		btnExp.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
 //
 //			@Override
@@ -104,7 +109,9 @@ public class WndKonfigurasiCabang extends SelectorComposer<Component> {
 
 		btnUpdate.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
 			public void onEvent(Event e) throws Exception {
-				doUpdate();
+				if (checkPrivUpdate()) {
+					doUpdate();	
+				}
 			}
 		});
 
@@ -443,6 +450,9 @@ public class WndKonfigurasiCabang extends SelectorComposer<Component> {
 		// System.out.println(sqlUpdate);
 
 		masterService.update(sqlUpdate, null);
+
+		Aksi = "Penambahan data Kode Cabang "+ComponentUtil.getValue(cmbKdCab);
+		doLogAktfitas(Aksi);
 
 		MessageBox.showInformation("Data Berhasil Di Update");
 	}

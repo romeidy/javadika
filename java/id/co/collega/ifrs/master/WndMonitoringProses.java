@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
 import static java.util.concurrent.TimeUnit.*;
 
 import org.jfree.data.time.Millisecond;
@@ -20,7 +21,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -69,6 +72,7 @@ public class WndMonitoringProses extends SelectorComposer<Component> {
 
 	
 	String status = "2";
+	String Aksi;
 	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
@@ -107,6 +111,8 @@ public class WndMonitoringProses extends SelectorComposer<Component> {
 		String proses = (String) ComponentUtil.getValue(cmbProses);
 		if (proses!=null) {
 			timerProgress.start();
+			Aksi = "Melakukan Monitoring Proses "+proses;
+			doLogAktfitas(Aksi);
 			progressBar.setVisible(true);
 			lblProgress.setVisible(true);
 		}else{

@@ -30,6 +30,7 @@ import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Vlayout;
 import org.zkoss.zul.Window;
 
+import com.jet.gand.services.GlobalVariable;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 import id.co.collega.ifrs.common.DTOMap;
@@ -67,6 +68,8 @@ public class WndKonfigurasiSystem extends SelectorComposer<Component>{
 	boolean onLoad = false;
 	String imageString;
 	String KD_BANK_OLD="";
+	String Aksi;
+	
 	public void doSave(){
 		
 	}
@@ -113,6 +116,8 @@ public class WndKonfigurasiSystem extends SelectorComposer<Component>{
 					map.put("FLG_AUDIT", ComponentUtil.getValue(rdoAudit));
 					map.put("PK", "KD_BANK");
 					masterService.updateData(map, "CFG_SYS");
+					Aksi = "Perubahan pada data Kode Bank "+ ComponentUtil.getValue(txtKdBank) +", "+ComponentUtil.getValue(txtNmBank);
+					doLogAktfitas(Aksi);
 					
 					MessageBox.showInformation("Data Berhasil di Update");
 //						doReset();
@@ -141,7 +146,9 @@ public class WndKonfigurasiSystem extends SelectorComposer<Component>{
 		
 		btnSimpan.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
 			public void onEvent(Event e) throws Exception {
-				doUpdate();
+				if (checkPrivUpdate()) {
+					doUpdate();	
+				}
 			}
 		});
 		

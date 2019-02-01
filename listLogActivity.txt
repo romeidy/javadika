@@ -1,9 +1,13 @@
-Konfigurasi System: -> Done
+Konfigurasi System:
 Tambah entry 
-	-Auto Proses = *ya -> Muncul Entryan jam dan Menit
-	-Audit trail = *Radiobutton (All,Insert Update Delete)
+	-Auto Proses = (on, off)*on -> Muncul Entryan jam dan Menit
+	-Audit trail = *Radiobutton (All,Insert Update Delete, Off)
 			-All Semua Aktifitas
-
+			-
+Aktifitas:
+Simpan = Penambahan data +nama menu+ +PK+ +deskripsi+
+hapus = Penghapusan data +nama menu+ +PK+ +deskripsi+
+update = Perubahan data +nama menu+ +PK+ +deskripsi+
 
 Daftar	Menu:
 
@@ -13,27 +17,27 @@ Daftar	Menu:
 	100003	Pemeliharaan Menu -> Done
 	100004	Pendaftaran Form -> Done
 	100005	Pemeliharaan Role Menu -> Done
-	100006	Pemeliharaan Akun
-	100007	Konfigurasi Cabang
-	100008	Pemeliharaan Pengumuman
-	100009	Konfigurasi System
-	100010	Pemeliharaan User Role Menu
+	100006	Pemeliharaan Akun -> Done
+	100007	Konfigurasi Cabang -> Done
+	100008	Pemeliharaan Pengumuman -> Done
+	100009	Konfigurasi System -> Done
+	100010	Pemeliharaan User Role Menu -> Done
 	100011	Pemeliharaan Privilege Menu
 
 	200000	Parameter Setup:
-	200004	Konfigurasi Group Parameter
-	200005	Konfigurasi Parameter
+	200004	Konfigurasi Group Parameter -> Done
+	200005	Konfigurasi Parameter -> Done
 
 	300000	Maintenance:
-	300001	Kredit Modifikasi
-	300002	Kredit Impair Asset
-	300003	Penempatan Pada Bank Lain
-	300004	Surat Berharga
-	300005	Bank Garansi
+	300001	Kredit Modifikasi -> Done
+	300002	Kredit Impair Asset -> Done
+	300003	Penempatan Pada Bank Lain -> Done
+	300004	Surat Berharga -> Done
+	300005	Bank Garansi -> Done
 
 	400000	Reporting:
 	400001	PD Lifetime
-	400002	LGD
+	400002	LGD	
 	400003	ECL PD LGD
 	400004	ECL Longgar Tarik
 	400005	ECL Kredit Impair Asset
@@ -48,15 +52,22 @@ Daftar	Menu:
 	400014	Trend Macro
 
 	500000	Tools:
-	500001	Simulasi Angsuran
-	500002	Cut Off
-	500003	ECL Scenario
-	500004	Create Cash Flow
-	500005	Calculate PD Unconditional
-	500006	Calculate LGD
-	500007	Calculate PD Conditional
-	500008	Monitoring Proses
-	500009	SPPI Test
+	500001	Simulasi Angsuran -> Done
+	500002	Cut Off -> Done
+	500003	ECL Scenario -> Done
+	500004	Create Cash Flow -> Done
+	500005	Calculate PD Unconditional -> Done
+	500006	Calculate LGD -> Done
+	500007	Calculate PD Conditional -> Done
+	500008	Monitoring Proses -> Done
+	500009	SPPI Test -> Done
+
+
+
+List log kepanjangan:
+- ECL Impair Asset
+- Log Jurnal Recalculated
+
 
 
 		

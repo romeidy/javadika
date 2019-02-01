@@ -37,7 +37,6 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -69,6 +68,7 @@ import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
 import id.co.collega.v7.seed.config.AuthenticationService;
 import id.co.collega.v7.ui.component.DialogUtil;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRImageLoader;
@@ -150,21 +150,22 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
 	
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	
+	String aksi;
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
-		
+				
 		loadDataProduk();
 		doLoadCabang();
 		
 		btnCetak.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
-			public void onEvent(Event e)throws Exception{
+			public void onEvent(Event e)throws Exception{				
 				doPrint();
 			}
 		});
 		
 		btnCari.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
-			public void onEvent(Event e)throws Exception{
+			public void onEvent(Event e)throws Exception{				
 				doFind();
 //				txtTgl.setDisabled(true);
 			}
@@ -454,7 +455,7 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
 										+"	Z.ATRIBUSI, Z.NILAI_PEROLEHAN, Z.MODIFIKASI,	"
 										+"	Z.IMPAIR_ASET, Z.AMOREIR,D.PARMNM,E.PARMNM,		"
 										+"	Z.ACCRU, Z.ACUM_ACCRU, Z.INTRATE, 				"
-										+"	Z.SBE_ANNUAL,Z.WDRSPARE,Z.TGL_POS			";
+										+"	Z.SBE_ANNUAL,Z.WDRSPARE			";
 					
 				}
 				
@@ -477,7 +478,7 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
 				Date tglPeriode=(Date)ComponentUtil.getValue(txtTgl);
 				
 				String SQL= "		SELECT 	"
-						+ "				Z.PRODID, Z.BRANCHID, Z.ACCNBR, Z.TGL_POS,					"
+						+ "				Z.PRODID, Z.BRANCHID, Z.ACCNBR, 							"
 						+ "				UPPER(D.PARMNM) AS STATUS , UPPER(E.PARMNM) AS JNSBUNGA,	"
 						+ "				Z.DPD, Z.RATING, Z.PLAFOND, Z.LNSTRDT, 						"
 						+ "				Z.LNDUEDT, Z.LNPERIOD, COALESCE(Z.BASENMNL,0) AS BASENMNL, 	"
@@ -601,6 +602,9 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
 			e.printStackTrace();
 			MessageBox.showError(e.getMessage());
 		}
+		aksi = "Search tanggal Posisi : " + txtTgl.getValue() + ", jenis Data : " + 
+				cmbJnsData + ", produk :" + cmbProduk;
+		doLogAktfitas(aksi);
 	}
 
 	public boolean isValid(){
@@ -656,7 +660,7 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
 		}
 		String type = (String) ComponentUtil.getValue(cmbFormat);
 
-		if (type.equals("pdf")) {
+//		if (type.equals("pdf")) {
 			String fileName="/jasper/LaporanNominatifKredit.jasper";
 
 			String realpath = Executions.getCurrent().getDesktop()
@@ -689,9 +693,12 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
 			new JRreportWindow(this.getSelf(), true, param, fileName, ds,type,conn);
 			doReset();
 			conn.close();
-		} else {
-			doExport();
-		}
+//		} else {
+//			doExport();
+//		}
+			aksi = "Print tanggal Posisi : " + txtTgl.getValue() + ", jenis Data : " + 
+					cmbJnsData + ", produk :" + cmbProduk;
+			doLogAktfitas(aksi);
 	}
 	
 	public void doExport() {
@@ -703,7 +710,7 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
         XSSFCreationHelper createHelper = workbook.getCreationHelper();
 
         // Create a Sheet
-        XSSFSheet sheet = workbook.createSheet("Laporan Nominatif Kredit");
+        XSSFSheet sheet = workbook.createSheet("Laporan ECL PD LGD");
         
         // Create a Font for styling header cells
         XSSFFont headerFontTitle = workbook.createFont();
@@ -738,11 +745,7 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
         // Freeze Pane
         sheet.createFreezePane(0, 4);
         
-        String[] columns = {"Produk", "Cabang", "No. Rekening", "Plafond","Saldo Akhir","Modifikasi",
-        					"Amor EIR","Nilai Wajar","ECL1","Impair Asset","ECL2","Longgar Tarik",
-        					"Jml. Hr Bunga","Rating","Tagihan Pokok","Tagihan Bunga","Denda","Tungg. Pokok","Tungg. Bunga","Atribusi",
-        					"Nilai Perolehan","Bunga Accru","Akm. Accru","Bunga Kontraktual (%)","Bunga Efektif (%)"
-        					,"Tgl. Buka","Tgl. Jatuh Tempo","Jangka Waktu","Status","Jns. Bunga"};
+        String[] columns = {"Periode", "Cabang", "No. Rekening", "Tgl. Angsur","PD (%)","LGD (%)","EAD","DF","ECL"};
         
         // Merge for Title
         sheet.addMergedRegion(new CellRangeAddress(0,1,0,columns.length-1)); 
@@ -763,76 +766,29 @@ public class WndLaporanNominatifKredit extends SelectorComposer<Component>{
         if (listDataNomiKr.size() > 0) {
 			for (int i = 0; i < listDataNomiKr.size(); i++) {
 				DTOMap DATA = (DTOMap) listDataNomiKr.get(i);
-				String PRODUK			= "'" + DATA.getString("PRODID");
-				String CABANG 			= "'" + DATA.getString("BRANCHID");
-				String ACCNBR 			= "'" + DATA.getString("ACCNBR");
-				BigDecimal PLAFOND 		= DATA.getBigDecimal("PLAFOND");
-				BigDecimal SALDO_AKHIR 	= DATA.getBigDecimal("ENDBAL");
-				BigDecimal MODIFIKASI 	= DATA.getBigDecimal("MODIFIKASI");
-				BigDecimal AMOREIR 		= DATA.getBigDecimal("AMOREIR");
-				BigDecimal NILAI_WAJAR	= BigDecimal.ZERO;
-						   NILAI_WAJAR 	= DATA.getBigDecimal("ENDBAL")
-								   			.subtract(DATA.getBigDecimal("AMOREIR"))
-								   			.subtract(DATA.getBigDecimal("MODIFIKASI"));
-				BigDecimal ECL1 		= DATA.getBigDecimal("ECL1");
-				BigDecimal IMPAIR_ASET 	= DATA.getBigDecimal("IMPAIR_ASET");
-				BigDecimal ECL2 		= DATA.getBigDecimal("ECL2");
-				BigDecimal WDRSPARE 	= DATA.getBigDecimal("WDRSPARE");
-				Integer DPD 			= DATA.getInt("DPD");
-				Integer RATING 			= DATA.getInt("RATING");
-				BigDecimal BASENMNL 	= DATA.getBigDecimal("BASENMNL");
-				BigDecimal INTNMNL		= DATA.getBigDecimal("INTNMNL");
-				BigDecimal PENALTY		= DATA.getBigDecimal("PENALTY");
-				BigDecimal TUNGPKK		= DATA.getBigDecimal("TUNGPKK");
-				BigDecimal TUNGGBNG 	= DATA.getBigDecimal("TUNGGBNG");
-				BigDecimal ATRIBUSI		= DATA.getBigDecimal("ATRIBUSI");
-				BigDecimal NILAI_PEROLEHAN= DATA.getBigDecimal("NILAI_PEROLEHAN");
-				BigDecimal ACCRU		= DATA.getBigDecimal("ACCRU");
-				BigDecimal ACUM_ACCRU	= DATA.getBigDecimal("ACUM_ACCRU");
-				BigDecimal INTRATE		= DATA.getBigDecimal("INTRATE");
-				BigDecimal SBE_ANNUAL 	= DATA.getBigDecimal("SBE_ANNUAL");
-				Date LNSTRDT	 		= DATA.getDate("LNSTRDT");
-				Date LNDUEDT	 		= DATA.getDate("LNDUEDT");
-				Integer LNPERIOD 		= DATA.getInt("LNPERIOD");
-				String STATUS 			= DATA.getString("STATUS");
-				String JNSBUNGA 		= DATA.getString("JNSBUNGA");
-				
+				Integer PERIODE = DATA.getInt("ECL_SEQ");
+				String CABANG = "'" + DATA.getString("BRANCHID");
+				String ACCNBR = "'" + DATA.getString("ACCNBR");
+				Date TGL_ANGSUR =DATA.getDate("TGL_ANGSUR");
+				BigDecimal PD = DATA.getBigDecimal("PD");
+				BigDecimal LGD = DATA.getBigDecimal("LGD");
+				BigDecimal EAD = DATA.getBigDecimal("EAD");
+				BigDecimal DF = DATA.getBigDecimal("DF");
+				BigDecimal ECL = DATA.getBigDecimal("ECL");
+
 				XSSFRow row = sheet.createRow(rowNum++);
 
-				row.createCell(0).setCellValue(PRODUK);
+				row.createCell(0).setCellValue(PERIODE);
 				row.createCell(1).setCellValue(CABANG);
 				row.createCell(2).setCellValue(ACCNBR);
-				row.createCell(3).setCellValue(PLAFOND.doubleValue());
-				row.createCell(4).setCellValue(SALDO_AKHIR.doubleValue());
-				row.createCell(5).setCellValue(MODIFIKASI.doubleValue());
-				row.createCell(6).setCellValue(AMOREIR.doubleValue());
-				row.createCell(7).setCellValue(NILAI_WAJAR.doubleValue());
-				row.createCell(8).setCellValue(ECL1.doubleValue());
-				row.createCell(9).setCellValue(IMPAIR_ASET.doubleValue());
-				row.createCell(10).setCellValue(ECL2.doubleValue());
-				row.createCell(11).setCellValue(WDRSPARE.doubleValue());
-				row.createCell(12).setCellValue(DPD);
-				row.createCell(13).setCellValue(RATING);
-				row.createCell(14).setCellValue(BASENMNL.doubleValue());
-				row.createCell(15).setCellValue(INTNMNL.doubleValue());
-				row.createCell(16).setCellValue(PENALTY.doubleValue());
-				row.createCell(17).setCellValue(TUNGPKK.doubleValue());
-				row.createCell(18).setCellValue(TUNGGBNG.doubleValue());
-				row.createCell(19).setCellValue(ATRIBUSI.doubleValue());
-				row.createCell(20).setCellValue(NILAI_PEROLEHAN.doubleValue());
-				row.createCell(21).setCellValue(ACCRU.doubleValue());
-				row.createCell(22).setCellValue(ACUM_ACCRU.doubleValue());
-				row.createCell(23).setCellValue(INTRATE.doubleValue());
-				row.createCell(24).setCellValue(SBE_ANNUAL.doubleValue());
-				XSSFCell dateOf = row.createCell(25);
-				dateOf.setCellValue(LNSTRDT);
-				dateOf.setCellStyle(dateCellStyle);
-				dateOf = row.createCell(26);
-				dateOf.setCellValue(LNDUEDT);
-				dateOf.setCellStyle(dateCellStyle);
-				row.createCell(27).setCellValue(LNPERIOD);
-				row.createCell(28).setCellValue(STATUS);
-				row.createCell(29).setCellValue(JNSBUNGA);
+				XSSFCell dateOfBirthCell = row.createCell(3);
+				dateOfBirthCell.setCellValue(TGL_ANGSUR);
+				dateOfBirthCell.setCellStyle(dateCellStyle);
+				row.createCell(4).setCellValue(PD.doubleValue());
+				row.createCell(5).setCellValue(LGD.doubleValue());
+				row.createCell(6).setCellValue(EAD.doubleValue());
+				row.createCell(7).setCellValue(DF.doubleValue());
+				row.createCell(8).setCellValue(ECL.doubleValue());
 			}
 		}
         

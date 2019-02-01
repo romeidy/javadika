@@ -28,7 +28,9 @@ import org.zkoss.zk.ui.WrongValuesException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -45,6 +47,8 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.common.FunctionUtils;
@@ -165,10 +169,11 @@ public class WndToolsSimulasiJadwalAngsur  extends SelectorComposer<Component>{
 	private List<DTOMap> map = new ArrayList<DTOMap>(0);
 	private List<DTOMap> listdatatunai;
 	
+	String Aksi;
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
-		
 		List<DTOMap> listData = (List<DTOMap>) masterService.getDataMaster(" SELECT PARMID,PARMNM,PARMIDOTH from CFG_PARM "
 				+ "																WHERE PARMGRP=15 ORDER BY PARMID "
 								,new Object[]{});
@@ -569,7 +574,8 @@ public class WndToolsSimulasiJadwalAngsur  extends SelectorComposer<Component>{
 			irr = jadwalAngsur.getIrr() * 100;
 			irrAtribusi = jadwalAngsur.getIrrAtribusi() * 100;
 			irrDiskon = jadwalAngsur.getIrrDiskon() * 100;
-			System.out.println("BANYAK DATA= "+listAngsuran.size());
+//			System.out.println("BANYAK DATA= "+listAngsuran.size());
+			
 			doSetAngsur(listAngsuran);
 			
 			
@@ -593,6 +599,8 @@ public class WndToolsSimulasiJadwalAngsur  extends SelectorComposer<Component>{
 					FunctionUtils.getDigitAt(tipeBunga.getInt("TYPEINT"), 1),
 					new BigDecimal(irrSemua));
 			doSetAngsur(listAngsuran);
+			Aksi = "Membuat Simulasi Jadwal angsuran "+ ComponentUtil.getValue(cmbJnsBunga)+""+ ComponentUtil.getValue(txtTenor)+"Bulan";
+			doLogAktfitas(Aksi);
 		}
 	}
 	

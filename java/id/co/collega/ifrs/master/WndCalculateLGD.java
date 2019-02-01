@@ -12,7 +12,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Datebox;
@@ -51,7 +53,8 @@ public class WndCalculateLGD extends SelectorComposer<Component>{
 	
 	Boolean onLoad = false;
 	@Wire DTOMap dataUser;
-	
+
+	String Aksi;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -93,6 +96,8 @@ public class WndCalculateLGD extends SelectorComposer<Component>{
 							}
 						}
 					}).start();
+					Aksi = "Start Calculated LGD Priode "+ComponentUtil.getValue(txtPeriode);
+					doLogAktfitas(Aksi);
 					MessageBox.showInformation("Data berhasil diproses.");
 				}
 			}

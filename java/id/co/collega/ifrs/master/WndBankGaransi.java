@@ -20,7 +20,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -68,11 +70,13 @@ public class WndBankGaransi extends SelectorComposer<Component>{
 	private Date openDate;
 	private String version;
 
+	String Aksi;
+	
 	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
-		super.doAfterCompose(comp);
-		
+		super.doAfterCompose(comp);;
+			
 		btnSave.addEventListener(Events.ON_CLICK, new EventListener() {
 			public void onEvent(Event event) throws Exception {
 				doSave();
@@ -87,7 +91,9 @@ public class WndBankGaransi extends SelectorComposer<Component>{
 
 		btnDelete.addEventListener(Events.ON_CLICK, new EventListener() {
 			public void onEvent(Event event) throws Exception {
-				doDeleteData();
+				if (checkPrivDelete()) {
+					doDeleteData();	
+				}
 			}
 		});
 		
@@ -108,7 +114,9 @@ public class WndBankGaransi extends SelectorComposer<Component>{
 	
 	private void doSave() {
 		if(doValidation()) {
-			doBeforeInsert();
+			if (checkPrivInsert()) {
+				doBeforeInsert();	
+			}
 		};
 	}
 	
@@ -165,6 +173,8 @@ public class WndBankGaransi extends SelectorComposer<Component>{
 								bGaransiMaster.put("CREATED_BY", authService.getUserDetails().getUserId());
 								masterService.insertData(bGaransiMaster,"BGARANSI_MASTER");
 								MessageBox.showInformation("Data berhasil di simpan.");
+								Aksi = "Penambahan data "+ ComponentUtil.getValue(cmbProduk) +" "+ComponentUtil.getValue(cmbCabang)+" "+ComponentUtil.getValue(txtNoRek);
+								doLogAktfitas(Aksi);
 								doReset();
 							} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
 										
@@ -195,6 +205,8 @@ public class WndBankGaransi extends SelectorComposer<Component>{
 								masterService.deleteData(bGaransi_Master, "BGARANSI_MASTER");
 								item.detach();
 								MessageBox.showInformation("Data Berhasil Dihapus");
+								Aksi = "Penghapusan data "+ ComponentUtil.getValue(cmbProduk) +" "+ComponentUtil.getValue(cmbCabang)+" "+ComponentUtil.getValue(txtNoRek);
+								doLogAktfitas(Aksi);
 								doReset();
 							} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
 								

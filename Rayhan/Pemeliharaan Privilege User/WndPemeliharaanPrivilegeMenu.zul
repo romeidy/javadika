@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?variable-resolver class="org.zkoss.zkplus.spring.DelegatingVariableResolver"?>
+<zk xmlns="http://www.zkoss.org/2005/zul">
+<window id="wnd" border="none" width="100%" hflex="true" vflex="true" apply="${wndPemeliharaanPrivilegeMenu}">
+	<borderlayout hflex="true" vflex="true">
+		<center autoscroll="true" hflex="true">
+			<vbox hflex="true" vflex="true">
+				<groupbox hflex="true">
+					<grid>
+						<columns>
+							<column width="100px"/>
+							<column />
+						</columns>
+						<rows>
+							<row>
+								<label value="Role Id" />
+								<combobox id="cmbRoleId" width="250px"/>
+							</row>
+						
+							<row>
+								<label value="User Id" />
+								<combobox id="cmbUserId" width="250px"/>
+							</row>
+						</rows>
+					</grid>
+				</groupbox>
+				<groupbox hflex="true" vflex="true">
+				<listbox id="listMenu" hflex="true" vflex="true" >
+					<listhead>
+						<listheader label="Menu Id" width="120px"/>
+						<listheader label="Nama Menu" width="250px" />
+						<listheader label="Insert" width="100px" align = "center" />
+						<listheader label="Update" width="100px" align = "center"/>
+						<listheader label="Delete" width="100px" align = "center"/>
+					</listhead>
+				</listbox>
+				</groupbox>
+			</vbox>
+		</center>
+		<south>
+			<div align="right">
+				<hbox>
+					<button id="btnSave" width="75px" label="Save"/>
+					<button id="btnReset" width="75px" label="Reset"/>
+				</hbox>
+			</div>
+		</south>
+	</borderlayout>
+</window>
+</zk>

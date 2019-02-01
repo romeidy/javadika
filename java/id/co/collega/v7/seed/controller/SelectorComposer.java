@@ -29,6 +29,7 @@ import org.zkoss.zk.ui.util.ComponentCloneListener;
 import org.zkoss.zk.ui.util.Composer;
 import org.zkoss.zk.ui.util.ComposerExt;
 import org.zkoss.zk.ui.util.ConventionWires;
+import org.zkoss.zul.Messagebox;
 
 import com.jet.gand.services.GlobalVariable;
 
@@ -85,9 +86,12 @@ public class SelectorComposer<T extends Component> implements Composer<T>, Compo
 
 	@Autowired MasterServices masterService;
 	@Autowired AuthenticationService authService;
-
+	String menuid = (String)GlobalVariable.getInstance().get("menuid");
+	String nmmenu = (String)GlobalVariable.getInstance().get("nmmenu");
 	DTOMap mapUser=(DTOMap)GlobalVariable.getInstance().get("USER_MASTER");
+	String userid = mapUser.getString("USERID");
 	DTOMap mapSys=(DTOMap)GlobalVariable.getInstance().get("cfgsys");
+	String Aksi_awal;
 	
 	private T _self;
 	/** A list of resolvers (never null). A variable resolver is added automatically if
@@ -127,6 +131,8 @@ public class SelectorComposer<T extends Component> implements Composer<T>, Compo
 		// register event to wire variables just before component onCreate
 		comp.addEventListener(1000, "onCreate", new BeforeCreateWireListener());
 		comp.addEventListener("onCreate", new AfterCreateWireListener());
+		
+		doLogAktfitas(Aksi_awal);
 	}
 	
 	/** Returns the component which applies to this composer.
@@ -339,51 +345,76 @@ public class SelectorComposer<T extends Component> implements Composer<T>, Compo
 			}
 		}
 	}
-	public void doLogAktfitas(String Aksi, String MENU_ID) {
+	public void doLogAktfitas(String Aksi) {
 		if (mapSys.getInt("FLG_AUDIT") == 1 ) {
 
-			String sqlMenu;
 			String Aksi_final;
-			String sqlDate;
-			String menu;
 			if (Aksi == null) {
-				Aksi_final = "";
+				Aksi_final = "Membuka menu "+nmmenu;
 			}else{
 				Aksi_final = Aksi;
 			}
-			sqlDate = "SELECT GETDATE() FROM CFG_SYS";
-			DTOMap mapDate = (DTOMap) masterService.getMapMaster(sqlDate, null);
-			sqlMenu = "SELECT * FROM CFG_MENU WHERE MENU_ID = '"+ MENU_ID +"'";
-			DTOMap mapMenu = (DTOMap) masterService.getMapMaster(sqlMenu, null);
-			menu = MENU_ID +" - "+ mapMenu.getString("NAME");
 			DTOMap SYS_AUDIT_TRAIL = new DTOMap();
-			SYS_AUDIT_TRAIL.put("USERID", mapUser.getString("USERID"));
-			SYS_AUDIT_TRAIL.put("MENU", menu);
+			SYS_AUDIT_TRAIL.put("USERID", userid);
+			SYS_AUDIT_TRAIL.put("MENU", menuid+"-"+nmmenu);
 			SYS_AUDIT_TRAIL.put("AKTIFITAS", Aksi_final);
 			masterService.insertData(SYS_AUDIT_TRAIL, "SYS_AUDIT_TRAIL");
 		}else if (mapSys.getInt("FLG_AUDIT") == 2) {
 
 			String sqlMenu;
-			String Aksi_final;
-			String sqlDate;
-			String menu;
-			if (Aksi == null) {
-				Aksi_final = "";
-			}else{
-				sqlDate = "SELECT GETDATE() FROM CFG_SYS";
-				DTOMap mapDate = (DTOMap) masterService.getMapMaster(sqlDate, null);
-				sqlMenu = "SELECT * FROM CFG_MENU WHERE MENU_ID = '"+ MENU_ID +"'";
-				DTOMap mapMenu = (DTOMap) masterService.getMapMaster(sqlMenu, null);
-				menu = MENU_ID +" - "+ mapMenu.getString("NAME");
+			int menu_sub = Integer.parseInt(menuid.substring(0,1));
+			if ((Aksi != null && Aksi.substring(0,9).equals("Perubahan")) || (Aksi != null && Aksi.substring(0,10).equals("Penambahan")) || (Aksi != null && Aksi.substring(0,11).equals("Penghapusan"))) {
 				DTOMap SYS_AUDIT_TRAIL = new DTOMap();
-				SYS_AUDIT_TRAIL.put("USERID", mapUser.getString("USERID"));
-				SYS_AUDIT_TRAIL.put("MENU", menu);
+				SYS_AUDIT_TRAIL.put("USERID",userid);
+				SYS_AUDIT_TRAIL.put("MENU", menuid+"-"+nmmenu);
 				SYS_AUDIT_TRAIL.put("AKTIFITAS", Aksi);
 				masterService.insertData(SYS_AUDIT_TRAIL, "SYS_AUDIT_TRAIL");
-//				System.out.println(Aksi);
 			}			
-		}else{
-			
+		}
+	}
+	
+	/*	
+	 * Check Hak untuk melakukaonSelectItemn Insert
+	 */
+	public boolean checkPrivInsert(){
+		String sql = "SELECT FLGINSERT FROM CFG_USER_PRV_MENU WHERE USERID= ? AND MENUID= ?";
+		DTOMap map = (DTOMap) masterService.getMapMaster(sql, new Object[]{userid, menuid});
+		int result = (Integer) map.getInt("FLGINSERT");
+		if(result == 1){
+			return true;
+		} else {
+			Messagebox.show("Maaf, Anda tidak berhak manambahkan data.");
+			return false;
+		}
+	}
+
+	/*	
+	 * Check Hak untuk melakukan Delete
+	 */
+	public boolean checkPrivDelete(){
+		String sql = "SELECT FLGDELETE FROM CFG_USER_PRV_MENU WHERE USERID= ? AND MENUID= ?";
+		DTOMap map = (DTOMap) masterService.getMapMaster(sql, new Object[]{userid, menuid});
+		int result = (Integer) map.getInt("FLGDELETE");
+		if(result == 1){
+			return true;
+		} else {
+			Messagebox.show("Maaf, Anda tidak berhak menghapus data.");
+			return false;
+		}
+	}
+
+/*	
+ * Check Hak untuk melakukan Update
+ */
+	public boolean checkPrivUpdate(){
+		String sql = "SELECT FLGUPDATE FROM CFG_USER_PRV_MENU WHERE USERID= ? AND MENUID= ?";
+		DTOMap map = (DTOMap) masterService.getMapMaster(sql, new Object[]{userid, menuid});
+		int result = (Integer) map.getInt("FLGUPDATE");
+		if(result == 1){
+			return true;
+		} else {
+			Messagebox.show("Maaf, Anda tidak berhak mengubah data.");
+			return false;
 		}
 	}
 	

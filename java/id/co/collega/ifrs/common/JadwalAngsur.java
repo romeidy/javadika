@@ -265,6 +265,12 @@ public class JadwalAngsur extends Window implements Serializable {
 		/*if(DataSession.getSysMap().getString("BANKID").equals("132")) { // PAPUA
 			tglJadwal.set(Calendar.DATE, tglBuka.getDate());
 		}*/
+
+		System.out.println("Tanggal "+tglMulai + "JK " + jangkaWaktu + "PP " +  periodPokok + "PB " +  periodBunga + "GP " + 
+				grpPokok + "GB " +  grpBunga + "DGB " +  distGrpBunga + "PK " + 
+				plafonKredit + "PV " +  provFee + "GF " +  getFee + "IR " +  intRate + "DS " +  discount + "TB " + 
+				tipeBunga + "TIM " +  typeIntMod + "RM " +  roundMod + "SR " +  stsRound);
+		
 		int date = tglBuka.getDate();
 		listAngsuran = new ArrayList();
 		listAngsuranDiscount = new ArrayList();

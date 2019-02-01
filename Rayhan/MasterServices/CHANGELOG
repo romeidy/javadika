@@ -1,0 +1,4 @@
+25-01-2019 :
++Penambahan fungsi (getMenuItemsByUser) : Untuk mencari menu item berdasarkan userid, digunakan di menu Pemeliharaan User Role Menu.
+30-01-2019 ;
++ Penambahan fungsi (getPrivItemsByUser) : Untuk mencari privilege berdasarkan userid, digunakan dimenu Pemeliharaan Privilege User. 

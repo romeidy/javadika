@@ -89,7 +89,9 @@ import id.co.collega.v7.ui.component.MenuTreeNode;
 @Scope("desktop")
 public class MainControllerV2 extends SelectorComposer<Borderlayout>{
 
-    @Autowired(required = false)
+    protected static final Navitem Navitem = null;
+
+	@Autowired(required = false)
     MenuLoader menuLoader;
 
     @Autowired(required = false)
@@ -321,6 +323,7 @@ public class MainControllerV2 extends SelectorComposer<Borderlayout>{
 		EventListener selectItem = new EventListener() {
 			public void onEvent(Event e) throws Exception {
 				onSelectItem((Navitem) e.getTarget());
+				getMenu(Navitem);
 			}
 		};
 		
@@ -392,6 +395,7 @@ public class MainControllerV2 extends SelectorComposer<Borderlayout>{
 				Include include = (Include) incContent;
 				if (item.getAttribute("isProgram")!=null) {
 					GlobalVariable.getInstance().put("menuid", item.getAttribute("id"));
+					GlobalVariable.getInstance().put("nmmenu", item.getAttribute("name"));
 					include.setSrc((String) item.getAttribute("url"));
 					include.invalidate();
 					lblMenu.setValue((String) item.getAttribute("name"));
@@ -427,7 +431,15 @@ public class MainControllerV2 extends SelectorComposer<Borderlayout>{
 		return listData;
     	
     }
-    
+    public List<DTOMap> getMenu(Navitem item){
+    	List<DTOMap> listData = new ArrayList<>();
+    	try {
+//    		listData = ;		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return listData;
+    }
     private void doSeacrhImage(){
     	DTOMap datas = new DTOMap();
 		datas = masterService.getMapMaster("SELECT LOGO_BANK FROM CFG_SYS", new Object[]{});

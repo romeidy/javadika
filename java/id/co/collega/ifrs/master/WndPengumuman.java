@@ -24,7 +24,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -39,6 +41,8 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.Cryptograph;
 import id.co.collega.ifrs.common.DTOMap;
@@ -101,12 +105,16 @@ public class WndPengumuman extends SelectorComposer<Component> {
 
 	private DTOMap dto;
 
+	String Aksi;
+	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-
+		
 		btnSimpan.addEventListener(Events.ON_CLICK, new EventListener() {
 			public void onEvent(Event event) throws Exception {
-				doCekSpv();
+				if (checkPrivInsert()) {
+					doCekSpv();	
+				}
 				//doSimpan();
 				// doReset();
 			}
@@ -120,7 +128,9 @@ public class WndPengumuman extends SelectorComposer<Component> {
 
 		btnHapus.addEventListener(Events.ON_CLICK, new EventListener() {
 			public void onEvent(Event event) throws Exception {
-				doHapus1();
+				if (checkPrivDelete()) {
+					doHapus1();	
+				}
 				doReset();
 			}
 		});
@@ -242,6 +252,8 @@ public class WndPengumuman extends SelectorComposer<Component> {
 				workbook.write(fos);
 				fos.close();
 				Filedownload.save(file, "xlsx");
+				Aksi = "Export Data To Excel "+ file;
+				doLogAktfitas(Aksi);
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -290,6 +302,8 @@ public class WndPengumuman extends SelectorComposer<Component> {
 		dto.put("STS_PUBLISH", ComponentUtil.getValue(cmbStatus));
 		
 		masterService.insertData(dto, "CFG_PENGUMUMAN");
+		Aksi = "Penambahan data dengan User Input "+ComponentUtil.getValue(txtUserInput)+" "+ComponentUtil.getValue(txtNamaInput);
+		doLogAktfitas(Aksi);
 		MessageBox.showInformation("Data Pengumuman berhasil disimpan");
 		
 		
@@ -447,6 +461,8 @@ public class WndPengumuman extends SelectorComposer<Component> {
 								if (Messagebox.ON_OK.equals(e.getName())) {
 									System.out.println("TGL INPUT ="+dtoDelete.getString("URAIAN"));
 									masterService.deleteData(dtoDelete, "CFG_PENGUMUMAN");
+									Aksi = "Penghapusan pada data "+ComponentUtil.getValue(txtUserInput)+", "+ComponentUtil.getValue(txtNamaInput);
+									doLogAktfitas(Aksi);
 									doReset();
 								} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
 									doReset();

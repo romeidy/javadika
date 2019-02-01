@@ -35,7 +35,6 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -58,6 +57,7 @@ import id.co.collega.ifrs.util.ComponentUtil;
 import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
 import id.co.collega.v7.seed.config.AuthenticationService;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 
 @org.springframework.stereotype.Component
 @Scope("execution")
@@ -99,6 +99,7 @@ public class WndLaporanLGD extends SelectorComposer<Component>{
 	private Date openDate;
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyyMM");
 	
+	String aksi;
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
@@ -110,7 +111,7 @@ public class WndLaporanLGD extends SelectorComposer<Component>{
 		});
 		
 		btnCari.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
-			public void onEvent(Event e)throws Exception{
+			public void onEvent(Event e)throws Exception{				
 				doFind();
 //				txtTgl.setDisabled(true);
 			}
@@ -195,6 +196,8 @@ public class WndLaporanLGD extends SelectorComposer<Component>{
 			e.printStackTrace();
 			MessageBox.showError(e.getMessage());
 		}
+		aksi = "Search laporan periode : " + txtTgl.getValue();
+		doLogAktfitas(aksi);
 	}
 
 	public boolean isValid(){
@@ -258,6 +261,8 @@ public class WndLaporanLGD extends SelectorComposer<Component>{
 		} else {
 			doExport();
 		}
+		aksi = "Print laporan periode : " + txtTgl.getValue();
+		doLogAktfitas(aksi);
 	}
 	
 	public void doExport() {

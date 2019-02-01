@@ -34,7 +34,6 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -62,6 +61,7 @@ import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
 import id.co.collega.v7.seed.config.AuthenticationService;
 import id.co.collega.v7.ui.component.DialogUtil;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRImageLoader;
@@ -117,6 +117,7 @@ public class WndLaporanLabaRugi  extends SelectorComposer<Component>{
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	SimpleDateFormat sdfView=new SimpleDateFormat("dd-MM-yyyy");
 	
+	String aksi;
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
@@ -125,13 +126,13 @@ public class WndLaporanLabaRugi  extends SelectorComposer<Component>{
 		cmbJnsLaporan.setSelectedIndex(0);
 		
 		btnCetak.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
-			public void onEvent(Event e)throws Exception{
+			public void onEvent(Event e)throws Exception{				
 				doPrint();
 			}
 		});
 		
 		btnCari.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
-			public void onEvent(Event e)throws Exception{
+			public void onEvent(Event e)throws Exception{				
 				doFind();
 //				txtTgl.setDisabled(true);
 			}
@@ -436,6 +437,9 @@ public class WndLaporanLabaRugi  extends SelectorComposer<Component>{
 			e.printStackTrace();
 			MessageBox.showError(e.getMessage());
 		}
+		aksi = "Search tgl : " + txtTgl.getValue() + ", jnsData : " + 
+				cmbJnsData + ", jnsLap : " + cmbJnsLaporan ;
+		doLogAktfitas(aksi);
 	}
 	
 	private List<dtoNeraca> convert(List<DTOMap> listDataMap) {
@@ -561,6 +565,9 @@ public class WndLaporanLabaRugi  extends SelectorComposer<Component>{
 		}else{
 			doExport();
 		}
+		aksi = "Print tgl : " + txtTgl.getValue() + ", jnsData : " + 
+				cmbJnsData + ", jnsLap : " + cmbJnsLaporan;
+		doLogAktfitas(aksi);
 		
 	}
 	public void doExport(){

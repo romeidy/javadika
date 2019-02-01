@@ -12,7 +12,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -57,10 +59,10 @@ public class WndPemeliharaanAkun extends SelectorComposer<Component>{
 	
 	Boolean onLoad = false;
 	
+	String Aksi;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-		
 		
 		txtUserId.addEventListener(Events.ON_OK, new EventListener() {
             public void onEvent(Event event) throws Exception {
@@ -179,6 +181,8 @@ public class WndPemeliharaanAkun extends SelectorComposer<Component>{
 			datas.put("USERID_PPATK", ComponentUtil.getValue(txtUserPPATK));
 			datas.put("PK", "USERID");
 			masterService.updateData(datas, "MST_USER");
+			Aksi = "Penambahan data USER ID "+ ComponentUtil.getValue(txtUserId) +", "+ComponentUtil.getValue(txtUserNmUser);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Akun Anda berhasil di update");
 		} catch (Exception e) {
 			e.printStackTrace();

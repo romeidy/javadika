@@ -31,7 +31,6 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -61,6 +60,7 @@ import id.co.collega.ifrs.util.ComponentUtil;
 import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
 import id.co.collega.v7.seed.config.AuthenticationService;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRImageLoader;
@@ -126,6 +126,8 @@ public class WndLaporanECLLonggarTarik extends SelectorComposer<Component>{
 	
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	
+	String aksi;
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
@@ -141,6 +143,7 @@ public class WndLaporanECLLonggarTarik extends SelectorComposer<Component>{
 		
 		btnCari.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
 			public void onEvent(Event e)throws Exception{
+				
 				doFind();
 //				txtTgl.setDisabled(true);
 			}
@@ -422,6 +425,15 @@ public class WndLaporanECLLonggarTarik extends SelectorComposer<Component>{
 					MessageBox.showInformation("Data tidak ditemukan");
 				}
 			}
+			if (chkNoRek.isChecked()) {
+				aksi = "Search posisi : " + txtTgl.getValue() + ", produk : " + 
+						cmbProduk + ", Semua Norek";
+			} else {
+				aksi = "Search posisi : " + txtTgl.getValue() + ", produk : " + 
+						cmbProduk + ", Norek : " + txtNoRek;
+			}
+			doLogAktfitas(aksi);
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 			MessageBox.showError(e.getMessage());
@@ -492,6 +504,14 @@ public class WndLaporanECLLonggarTarik extends SelectorComposer<Component>{
 		} else {
 			doExport();
 		}
+		if (chkNoRek.isChecked()) {
+			aksi = "Print posisi: " + txtTgl.getValue() + ", produk : " + 
+					cmbProduk + ", Semua Norek";
+		} else {
+			aksi = "Print posisi : " + txtTgl.getValue() + ", produk : " + 
+					cmbProduk + ", Norek:" + txtNoRek;
+		}
+		doLogAktfitas(aksi);
 	}
 	
 	public void doExport() {
@@ -503,7 +523,7 @@ public class WndLaporanECLLonggarTarik extends SelectorComposer<Component>{
         XSSFCreationHelper createHelper = workbook.getCreationHelper();
 
         // Create a Sheet
-        XSSFSheet sheet = workbook.createSheet("Laporan ECL Longgar Tarik");
+        XSSFSheet sheet = workbook.createSheet("Laporan ECL PD LGD");
         
         // Create a Font for styling header cells
         XSSFFont headerFontTitle = workbook.createFont();

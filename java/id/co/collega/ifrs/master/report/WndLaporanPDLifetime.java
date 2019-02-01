@@ -32,7 +32,6 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -53,6 +52,7 @@ import id.co.collega.ifrs.master.service.MasterServices;
 import id.co.collega.ifrs.util.ComponentUtil;
 import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import id.co.collega.v7.seed.config.AuthenticationService;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.util.JRImageLoader;
@@ -96,7 +96,8 @@ public class WndLaporanPDLifetime  extends SelectorComposer<Component>{
 	private List<DTOMap> listda;
 	private Date openDate;
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyyMM");
-	
+
+	String aksi;
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
@@ -207,6 +208,8 @@ public class WndLaporanPDLifetime  extends SelectorComposer<Component>{
 			e.printStackTrace();
 			MessageBox.showError(e.getMessage());
 		}
+		aksi = "Search laporan periode : " + txtTgl.getValue();
+		doLogAktfitas(aksi);
 	}
 
 	public boolean isValid(){
@@ -268,6 +271,8 @@ public class WndLaporanPDLifetime  extends SelectorComposer<Component>{
 		} else {
 			doExport();
 		}
+		aksi = "Print laporan periode : " + txtTgl.getValue();
+		doLogAktfitas(aksi);
 	}
 	
 	public void doExport() {

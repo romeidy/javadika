@@ -17,7 +17,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFCreationHelper;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
@@ -27,7 +33,6 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -56,6 +61,7 @@ import id.co.collega.ifrs.master.service.MasterServices;
 import id.co.collega.ifrs.util.ComponentUtil;
 import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import id.co.collega.v7.seed.config.AuthenticationService;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -124,6 +130,8 @@ public class WndLaporanRincianCOA extends SelectorComposer<Component>{
 	public List listAllRow=new ArrayList<>();
 	
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+
+	String aksi;
 	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
@@ -430,6 +438,13 @@ public class WndLaporanRincianCOA extends SelectorComposer<Component>{
 			e.printStackTrace();
 			MessageBox.showError(e.getMessage());
 		}
+		if(chkNoRek.isChecked()){
+			aksi = "Search Posisi : " + txtTgl.getValue() + ", cab: " + 
+						cmbCabang + ", COA : Semua";					
+			}
+			aksi = "Search Posisi : " + txtTgl.getValue() + ", cab: " + 
+					cmbCabang + ", COA :" + txtNoRek;
+			doLogAktfitas(aksi);
 	}
 
 	public boolean isValid(){
@@ -507,14 +522,21 @@ public class WndLaporanRincianCOA extends SelectorComposer<Component>{
 		} else {
 			doExport();
 		}
+		if(chkNoRek.isChecked()){
+			aksi = "Print tanggal Posisi : " + txtTgl.getValue() + ", cabang: " + 
+						cmbCabang + ", COA : Semua";					
+			}
+			aksi = "Print tanggal Posisi : " + txtTgl.getValue() + ", cabang: " + 
+					cmbCabang + ", COA :" + txtNoRek;
+			doLogAktfitas(aksi);
 	}
 	
 	public void doExport() {
 		// Create a Workbook
-        XSSFWorkbook workbook = new XSSFWorkbook(); // (XSSFWorkbook() for generating `.xls` file) (XSSFWorkbook for generating `.xlsx` file)
+        XSSFWorkbook workbook = new XSSFWorkbook(); // (HSSFWorkbook() for generating `.xls` file) (XSSFWorkbook for generating `.xlsx` file)
 
         /* CreationHelper helps us create instances of various things like DataFormat, 
-           Hyperlink, RichTextString etc, in a format (XSSF, XSSF) independent way */
+           Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
         XSSFCreationHelper createHelper = workbook.getCreationHelper();
 
         // Create a Sheet
@@ -553,7 +575,7 @@ public class WndLaporanRincianCOA extends SelectorComposer<Component>{
         // Freeze Pane
         sheet.createFreezePane(0, 4);
         
-        String[] columns = {"No", "Cabang", "No. COA","Nama COA", "Valuta","Sandi", "Saldo Awal","Mut. DB","Mut. KR","Saldo Akhir"};
+        String[] columns = {"No", "Cabang", "No. COA","Valuta","Sandi", "Saldo Awal","Mut. DB","Mut. KR","Saldo Akhir"};
         
         // Merge for Title
         sheet.addMergedRegion(new CellRangeAddress(0,1,0,columns.length-1)); 
@@ -568,36 +590,15 @@ public class WndLaporanRincianCOA extends SelectorComposer<Component>{
         // Create Cell Style for formatting Date
         XSSFCellStyle dateCellStyle = workbook.createCellStyle();
         dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-        
-        XSSFCellStyle cs = workbook.createCellStyle();
-//        XSSFDataFormat df = workbook.createDataFormat();
-        cs.setDataFormat(createHelper.createDataFormat().getFormat("_( #,##0.00_);_( (#,##0.00);_( \"-\"??_);_(@_)"));
-        
+
         // Create Other rows and cells with employees data
         int rowNum = 4;
-        String sa_string;
-        String sa_sub;
-        String sa_subnow;
-        String sawal_string;
-        String sawal_sub;
-        String sawal_subnow;
-        
-        BigDecimal totSaldoAwal=BigDecimal.ZERO;
-		BigDecimal totMutDb=BigDecimal.ZERO;
-		BigDecimal totMutCr=BigDecimal.ZERO;
-		BigDecimal totSaldoAkhir=BigDecimal.ZERO;
-		
-		XSSFCellStyle cellStyleRight = workbook.createCellStyle();
-        cellStyleRight.setAlignment(CellStyle.ALIGN_RIGHT);
-        cellStyleRight.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
-        
         if (listDataRincianCOA.size() > 0) {
 			for (int i = 0; i < listDataRincianCOA.size(); i++) {
 				DTOMap DATA 			= (DTOMap) listDataRincianCOA.get(i);
 				Integer NO 				= (i+1);
 				String CABANG 			= "'" + DATA.getString("BRANCHID");
-				String NO_COA 			= "'" + DATA.getString("COANBR");
-				String NM_COA 			= DATA.getString("COANM");
+				String NO_COA 			= "'" + DATA.getString("COANBR")+" - "+DATA.getString("COANM");
 				String CCYID 			= DATA.getString("CCYID");
 				String SANDI 			= DATA.getString("SANDI");
 				BigDecimal SALDO_AWAL 	= DATA.getBigDecimal("STRTDTBAL");
@@ -605,23 +606,13 @@ public class WndLaporanRincianCOA extends SelectorComposer<Component>{
 				BigDecimal MUT_KR 		= DATA.getBigDecimal("CRMUT");
 				BigDecimal SALDO_AKHIR 	= DATA.getBigDecimal("ENDBAL");
 
-				if (!DATA.getString("SANDI").equals("465")) {
-					totSaldoAwal  = totSaldoAwal .add(DATA.getBigDecimal("STRTDTBAL"));
-					totMutDb	  = totMutDb	 .add(DATA.getBigDecimal("DBMUT"));
-					totMutCr	  = totMutCr	 .add(DATA.getBigDecimal("CRMUT"));
-					totSaldoAkhir = totSaldoAkhir.add(DATA.getBigDecimal("ENDBAL"));
-				}
-
-				
-				
 				XSSFRow row = sheet.createRow(rowNum++);
 
 				row.createCell(0).setCellValue(NO);
 				row.createCell(1).setCellValue(CABANG);
 				row.createCell(2).setCellValue(NO_COA);
-				row.createCell(3).setCellValue(NM_COA);
-				row.createCell(4).setCellValue(CCYID);
-				row.createCell(5).setCellValue(SANDI);
+				row.createCell(3).setCellValue(CCYID);
+				row.createCell(4).setCellValue(SANDI);
 				/*XSSFCell cell =row.createCell(5);
 				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 				cell.setCellValue(String.valueOf(SALDO_AWAL.doubleValue()));
@@ -638,83 +629,14 @@ public class WndLaporanRincianCOA extends SelectorComposer<Component>{
 				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 				cell.setCellValue(new Double(String.valueOf(SALDO_AKHIR.doubleValue())));*/
 				
-				
-//				row.createCell(6).setCellValue(SALDO_AWAL.doubleValue());
-//				row.createCell(7).setCellValue(MUT_DB.setScale(15, RoundingMode.HALF_EVEN).doubleValue());
-//				row.createCell(8).setCellValue(MUT_KR.setScale(15, RoundingMode.HALF_EVEN).doubleValue());
-//				row.createCell(9).setCellValue(SALDO_AKHIR.doubleValue());
-				
-
-				
-//				sawal_string = SALDO_AWAL.toString();
-//				if(sawal_string.length() >= 5){
-//					sawal_sub = sawal_string.substring(0, sawal_string.length() - 5);
-//					sawal_subnow = sawal_sub + ".0000";
-//					
-//				}else{
-//					sawal_subnow = SALDO_AWAL.toString();
-//				}
-//				double sawal_final = Double.parseDouble(sawal_subnow);
-//				
-//				XSSFCell cell6 = row.createCell((short)6);
-//				cell6.setCellValue(sawal_final);
-//				cell6.setCellStyle(cs);
-//				
-//				XSSFCell cell7 = row.createCell((short)7);
-//				cell7.setCellValue(MUT_DB.doubleValue());
-//				cell7.setCellStyle(cs);
-//				
-//				XSSFCell cell8 = row.createCell((short)8);
-//				cell8.setCellValue(MUT_KR.doubleValue());
-//				cell8.setCellStyle(cs);
-//				
-//				sa_string = SALDO_AKHIR.toString();
-//				if(sa_string.length() >= 5){
-//					sa_sub = sa_string.substring(0, sa_string.length() - 5);
-//					sa_subnow = sa_sub + ".0000";
-//				}else{
-//					sa_subnow = SALDO_AKHIR.toString();
-//				}
-//				double sa_final = Double.parseDouble(sa_subnow);
-//				
-//				XSSFCell cell9 = row.createCell((short)9);
-//				cell9.setCellValue(sa_final);
-//				cell9.setCellStyle(cs);
-//				
-//				System.out.println(sa_subnow);
-				
-
-//				row.createCell(6).setCellValue(SALDO_AWAL.toString());
-//				row.createCell(7).setCellValue(MUT_DB.toString());
-//				row.createCell(8).setCellValue(MUT_KR.toString());
-//				row.createCell(9).setCellValue(SALDO_AKHIR.toString());
-				
-//				row.createCell(6).setCellValue(SALDO_AWAL.setScale(15, RoundingMode.FLOOR).doubleValue());
-				
-//				row.createCell(9).setCellValue(SALDO_AKHIR.setScale(15, RoundingMode.FLOOR).doubleValue());
-
-				row.createCell(6).setCellValue(FunctionUtils.moneyToText(SALDO_AWAL));
-				row.createCell(7).setCellValue(MUT_DB.setScale(15, RoundingMode.FLOOR).doubleValue());
-				row.createCell(8).setCellValue(MUT_KR.setScale(15, RoundingMode.FLOOR).doubleValue());
-				row.createCell(9).setCellValue(FunctionUtils.moneyToText(SALDO_AKHIR));
-				
-				row.getCell(6).setCellStyle(cellStyleRight);
-				row.getCell(9).setCellStyle(cellStyleRight);
-
-//				System.out.print(SALDO_AWAL.toPlainString());
-//				System.out.print(MUT_DB.toPlainString());
-//				System.out.print(MUT_KR.toPlainString());
-//				System.out.print(SALDO_AKHIR.toPlainString());
-//				
-//				System.out.print(SALDO_AWAL.toString());
-//				System.out.print(MUT_DB.toString());
-//				System.out.print(MUT_KR.toString());
-//				System.out.print(SALDO_AKHIR.toString());
+				row.createCell(5).setCellValue(round(SALDO_AWAL.doubleValue(),2));
+				row.createCell(6).setCellValue(roundB(MUT_DB.doubleValue(), 2));
+				row.createCell(7).setCellValue(round(MUT_KR.doubleValue(), 4));
+				row.createCell(8).setCellValue(roundB(SALDO_AKHIR.doubleValue(),4));
 			}
 		}
         
-        
-    	// Resize all columns to fit the content size
+		// Resize all columns to fit the content size
         for(int i = 0; i < columns.length; i++) {
             sheet.autoSizeColumn(i);
         }

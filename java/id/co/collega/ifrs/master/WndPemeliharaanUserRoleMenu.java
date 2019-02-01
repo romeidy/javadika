@@ -13,7 +13,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -24,6 +26,8 @@ import org.zkoss.zul.Treechildren;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.Treerow;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.common.JdbcTemplate;
@@ -52,6 +56,7 @@ public class WndPemeliharaanUserRoleMenu extends SelectorComposer<Component>{
 	
 	Boolean onLoad = false;
 	
+	String Aksi;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -73,7 +78,9 @@ public class WndPemeliharaanUserRoleMenu extends SelectorComposer<Component>{
 		btnSave.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
             public void onEvent(Event event) throws Exception {
         		//doSave();
-            	doBeforeSave();
+            	if (checkPrivInsert()) {
+                	doBeforeSave();	
+				}
             }
         });
 		
@@ -181,6 +188,8 @@ public class WndPemeliharaanUserRoleMenu extends SelectorComposer<Component>{
 					datas.put("ROLEID", ComponentUtil.getValue(cmbRoleId));
 					datas.put("MENUID", (String)item.getValue());
 					masterService.insertData(datas, "CFG_USER_ROLE_MENU");
+					Aksi = "Perubahan data Role Id"+ ComponentUtil.getValue(cmbRoleId) +" "+ComponentUtil.getValue(cmbUserId);
+					doLogAktfitas(Aksi);
 				}
 			}
 			MessageBox.showInformation("Data berhasil di simpan");

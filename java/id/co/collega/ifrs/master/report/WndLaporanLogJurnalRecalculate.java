@@ -34,7 +34,6 @@ import org.zkoss.zk.ui.Sessions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -64,6 +63,7 @@ import id.co.collega.ifrs.util.ComponentUtil;
 import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
 import id.co.collega.v7.seed.config.AuthenticationService;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRImageLoader;
@@ -128,6 +128,8 @@ public class WndLaporanLogJurnalRecalculate extends SelectorComposer<Component>{
 	
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	
+	String aksi;
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
@@ -135,13 +137,20 @@ public class WndLaporanLogJurnalRecalculate extends SelectorComposer<Component>{
 		loadDataCabang();
 		
 		btnCetak.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
-			public void onEvent(Event e)throws Exception{
+			public void onEvent(Event e)throws Exception{				
 				doPrint();
 			}
 		});
 		
 		btnCari.addEventListener(Events.ON_CLICK,new EventListener<Event>(){
 			public void onEvent(Event e)throws Exception{
+				if(chkNoRek.isChecked()){
+				aksi = "Search tanggal Posisi : " + txtTgl.getValue() + ", cabang: " + 
+							cmbCabang + ", COA : Semua";					
+				}
+				aksi = "Search tanggal Posisi : " + txtTgl.getValue() + ", cabang: " + 
+						cmbCabang + ", COA :" + txtNoRek;
+				doLogAktfitas(aksi);
 				doFind();
 //				txtTgl.setDisabled(true);
 			}
@@ -478,6 +487,13 @@ public class WndLaporanLogJurnalRecalculate extends SelectorComposer<Component>{
 		} else {
 			doExport();
 		}
+		if(chkNoRek.isChecked()){
+			aksi = "Print tanggal Posisi : " + txtTgl.getValue() + ", cabang: " + 
+						cmbCabang + ", COA : Semua";					
+			}
+			aksi = "Print tanggal Posisi : " + txtTgl.getValue() + ", cabang: " + 
+					cmbCabang + ", COA :" + txtNoRek;
+			doLogAktfitas(aksi);
 	}
 	
 	public void doExport() {
@@ -489,7 +505,7 @@ public class WndLaporanLogJurnalRecalculate extends SelectorComposer<Component>{
         XSSFCreationHelper createHelper = workbook.getCreationHelper();
 
         // Create a Sheet
-        XSSFSheet sheet = workbook.createSheet("Laporan Log Jurnal Recalculated");
+        XSSFSheet sheet = workbook.createSheet("Laporan Log Jurnal Recalculate");
         
         // Create a Font for styling header cells
         XSSFFont headerFontTitle = workbook.createFont();
@@ -524,7 +540,7 @@ public class WndLaporanLogJurnalRecalculate extends SelectorComposer<Component>{
         // Freeze Pane
         sheet.createFreezePane(0, 4);
         
-        String[] columns = {"No", "Cabang", "No. COA","Nama COA", "Valuta","Tanggal","No. Arsip","Kode Tx","Keterangan","Jml. Mutasi","D/K","User"};
+        String[] columns = {"No", "Cabang", "No. COA", "Valuta","Tanggal","No. Arsip","Kode Tx","Keterangan","Jml. Mutasi","D/K","User"};
         
         // Merge for Title
         sheet.addMergedRegion(new CellRangeAddress(0,1,0,columns.length-1)); 
@@ -547,8 +563,7 @@ public class WndLaporanLogJurnalRecalculate extends SelectorComposer<Component>{
 				DTOMap DATA 		= (DTOMap) listDataLogJurnalRecalculate.get(i);
 				Integer NO 			= (i+1);
 				String CABANG 		= "'" + DATA.getString("BRANCHID");
-				String ACCNBR 		= "'" + DATA.getString("ACCNBR");
-				String ACCNM		= DATA.getString("ACCNBRNM");;
+				String ACCNBR 		= "'" + DATA.getString("ACCNBR") + " - "+ DATA.getString("ACCNBRNM");
 				String CCYID 		= DATA.getString("CCYID");
 				Date TANGGAL 		= DATA.getDate("TXDATE");
 				String NO_ARSIP 	= DATA.getString("TXID");
@@ -563,17 +578,16 @@ public class WndLaporanLogJurnalRecalculate extends SelectorComposer<Component>{
 				row.createCell(0).setCellValue(NO);
 				row.createCell(1).setCellValue(CABANG);
 				row.createCell(2).setCellValue(ACCNBR);
-				row.createCell(3).setCellValue(ACCNM);
-				row.createCell(4).setCellValue(CCYID);
-				XSSFCell dateOfBirthCell = row.createCell(5);
+				row.createCell(3).setCellValue(CCYID);
+				XSSFCell dateOfBirthCell = row.createCell(4);
 				dateOfBirthCell.setCellValue(TANGGAL);
 				dateOfBirthCell.setCellStyle(dateCellStyle);
-				row.createCell(6).setCellValue(NO_ARSIP);
-				row.createCell(7).setCellValue(KODE_TX);
-				row.createCell(8).setCellValue(KETERANGAN);
-				row.createCell(9).setCellValue(JML_TX.doubleValue());
-				row.createCell(10).setCellValue(DBKR);
-				row.createCell(11).setCellValue(USER);
+				row.createCell(5).setCellValue(NO_ARSIP);
+				row.createCell(6).setCellValue(KODE_TX);
+				row.createCell(7).setCellValue(KETERANGAN);
+				row.createCell(8).setCellValue(JML_TX.doubleValue());
+				row.createCell(9).setCellValue(DBKR);
+				row.createCell(10).setCellValue(USER);
 			}
 		}
         

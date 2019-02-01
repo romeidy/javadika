@@ -7,13 +7,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.h2.store.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
@@ -53,11 +56,12 @@ public class WndBatchProcess extends SelectorComposer<Component>{
 	List<DTOMap> listProsesCutOff=new ArrayList<>();
 	Boolean onLoad = false;
 	@Wire DTOMap dataUser;
-	
+	String Aksi;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
 		doLoadDataProcess();
+		
 		btnYa.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
 			public void onEvent(Event event) throws Exception {
 				doProses();
@@ -133,6 +137,8 @@ public class WndBatchProcess extends SelectorComposer<Component>{
 					item.setAttribute("DATA", data);
 				}
 				if (isSucces) {
+					Aksi = "Melakukan Proses CUT OFF "+((DTOMap) GlobalVariable.getInstance().get("cfgsys")).getDate("OPEN_DATE");
+					doLogAktfitas(Aksi);
 					MessageBox.showInformation("Proses berhasil.");
 					doLoadDataProcess();
 				} else {

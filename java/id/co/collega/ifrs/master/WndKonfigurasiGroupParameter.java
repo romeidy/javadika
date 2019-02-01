@@ -14,7 +14,9 @@ import org.zkoss.zk.ui.WrongValuesException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Intbox;
@@ -24,6 +26,8 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.master.service.MasterServices;
@@ -55,35 +59,39 @@ public class WndKonfigurasiGroupParameter extends SelectorComposer<Component> {
 	
 	private boolean onLoad = false;
 	
-
-	String UserId="";
+	String Aksi;
 
 	public void doSaveOrUpdate() {
 		if (validation()) {	
 			if (onLoad){
-				Messagebox.show("Apakah Anda Yakin mau mengupdate data ini .. ?", "KONFIRMASI",
-					Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
-						@Override
-						public void onEvent(Event e) throws Exception {
-							if (Messagebox.ON_OK.equals(e.getName())) {
-								doBeforeSave();
-							} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
-								
-							}
-						}
-					});
-			}else{
-				Messagebox.show("Apakah Anda Yakin mau menyimpan data ini .. ?", "KONFIRMASI",
-						Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
-							@Override
-							public void onEvent(Event e) throws Exception {
-								if (Messagebox.ON_OK.equals(e.getName())) {
-									doBeforeSave();	
-								} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
-									
+				if (checkPrivUpdate()) {
+					Messagebox.show("Apakah Anda Yakin mau mengupdate data ini .. ?", "KONFIRMASI",
+							Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
+								@Override
+								public void onEvent(Event e) throws Exception {
+									if (Messagebox.ON_OK.equals(e.getName())) {
+										doBeforeSave();
+									} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
+										
+									}
 								}
-							}
-						});
+							});	
+				}
+			}else{
+				if (checkPrivInsert()) {
+
+					Messagebox.show("Apakah Anda Yakin mau menyimpan data ini .. ?", "KONFIRMASI",
+							Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
+								@Override
+								public void onEvent(Event e) throws Exception {
+									if (Messagebox.ON_OK.equals(e.getName())) {
+										doBeforeSave();	
+									} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
+										
+									}
+								}
+							});
+				}
 			}
 		}
 	}
@@ -99,6 +107,8 @@ public class WndKonfigurasiGroupParameter extends SelectorComposer<Component> {
 				map.put("PARMGRP", ComponentUtil.getValue(txtKdGroup));
 				map.put("GRPNM", ComponentUtil.getValue(txtKeterangan));
 				masterService.insertData(map, "REF_PARM");
+				Aksi = "Penambahan data "+ ComponentUtil.getValue(txtKdGroup) +", "+ComponentUtil.getValue(txtKeterangan);
+				doLogAktfitas(Aksi);
 				MessageBox.showInformation("Data Berhasil Disimpan");
 				doReset();
 			}
@@ -111,6 +121,9 @@ public class WndKonfigurasiGroupParameter extends SelectorComposer<Component> {
 		map.put("GRPNM", ComponentUtil.getValue(txtKeterangan));
 		map.put("PK", "PARMGRP");
 		masterService.updateData(map, "REF_PARM");
+		masterService.insertData(map, "REF_PARM");
+		Aksi = "Perubahan pad data "+ ComponentUtil.getValue(txtKdGroup) +", "+ComponentUtil.getValue(txtKeterangan);
+		doLogAktfitas(Aksi);
 		MessageBox.showInformation("Data Berhasil Diupdate");
 		doReset();
 	}
@@ -125,6 +138,7 @@ public class WndKonfigurasiGroupParameter extends SelectorComposer<Component> {
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
+		
 		doRefreshTable();
 		txtKdGroup.addEventListener(Events.ON_OK, new EventListener<Event>() {
 			public void onEvent(Event e) throws Exception {
@@ -215,6 +229,8 @@ public class WndKonfigurasiGroupParameter extends SelectorComposer<Component> {
 		DTOMap data = (DTOMap) item.getAttribute("DATA");
 		data.put("PK", "PARMGRP");
 		masterService.deleteData(data, "REF_PARM");
+		Aksi = "Penghapusan data "+ ComponentUtil.getValue(txtKdGroup) +" "+ComponentUtil.getValue(txtKeterangan);
+		doLogAktfitas(Aksi);
 		item.detach();
 		MessageBox.showInformation("Data Berhasil Dihapus");
 		doReset();

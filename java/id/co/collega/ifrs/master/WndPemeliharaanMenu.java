@@ -12,7 +12,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Intbox;
@@ -24,6 +26,8 @@ import org.zkoss.zul.Treechildren;
 import org.zkoss.zul.Treeitem;
 import org.zkoss.zul.Treerow;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.master.service.MasterServices;
@@ -56,6 +60,7 @@ public class WndPemeliharaanMenu extends SelectorComposer<Component>{
 	
 	Boolean onLoad = false;
 	
+	String Aksi;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -93,7 +98,9 @@ public class WndPemeliharaanMenu extends SelectorComposer<Component>{
 		btnDelete.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
             public void onEvent(Event event) throws Exception {
         		//doDelete();
-            	doBeforeDelete();
+            	if (checkPrivDelete()) {
+                	doBeforeDelete();	
+				}
             }
         });
 		
@@ -109,10 +116,14 @@ public class WndPemeliharaanMenu extends SelectorComposer<Component>{
 	private void doSave(){
 		if (doValidation()) {
 			if(onLoad){
-				doBeforeUpdate();
+				if (checkPrivUpdate()) {
+					doBeforeUpdate();	
+				}
 				//doUpdate();
 			}else{
-				doBeforeInsert();
+				if (checkPrivInsert()) {
+					doBeforeInsert();	
+				}
 				//doInsert();
 			}
 		}
@@ -364,6 +375,8 @@ public class WndPemeliharaanMenu extends SelectorComposer<Component>{
 				datas.put("SEQ", ComponentUtil.getValue(txtSeq));
 				datas.put("PARAM", ComponentUtil.getValue(txtParameters));
 				masterService.insertData(datas, "CFG_MENU");
+				Aksi = "Penambahan data Menu Id "+ ComponentUtil.getValue(txtMenuId) +", "+ComponentUtil.getValue(txtMenuNm);
+				doLogAktfitas(Aksi);
 				MessageBox.showInformation("Data berhasil di simpan");
 			}else{
 				MessageBox.showError("Data telah ada di database");
@@ -386,6 +399,8 @@ public class WndPemeliharaanMenu extends SelectorComposer<Component>{
 			datas.put("PARAM", ComponentUtil.getValue(txtParameters));
 			datas.put("PK", "MENU_ID");
 			masterService.updateData(datas, "CFG_MENU");
+			Aksi = "Perubahan data Menu Id "+ ComponentUtil.getValue(txtMenuId) +", "+ComponentUtil.getValue(txtMenuNm);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data berhasil di update");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -401,6 +416,8 @@ public class WndPemeliharaanMenu extends SelectorComposer<Component>{
 			datas.put("PK", "MENU_ID");
 			masterService.deleteData(datas, "CFG_MENU");
 			MessageBox.showInformation("Data berhasil di hapus");
+			Aksi = "Penghapusan data Menu Id "+ ComponentUtil.getValue(txtMenuId) +", "+ComponentUtil.getValue(txtMenuNm);
+			doLogAktfitas(Aksi);
 			/*Messagebox.show("Apakah Anda Yakin mau menghapus data ini .. ?", "KONFIRMASI", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
 
 				@Override

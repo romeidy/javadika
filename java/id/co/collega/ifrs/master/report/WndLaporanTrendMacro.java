@@ -21,13 +21,13 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 
 import com.jet.gand.services.GlobalVariable;
 
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.common.FunctionUtils;
 import id.co.collega.ifrs.common.JdbcTemplate;
@@ -49,6 +49,8 @@ public class WndLaporanTrendMacro extends SelectorComposer<Component> {
 	DTOMap cfg_sys=(DTOMap)GlobalVariable.getInstance().get("cfgsys");
 	
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MMM");
+	
+	String aksi;
 	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
@@ -89,11 +91,13 @@ public class WndLaporanTrendMacro extends SelectorComposer<Component> {
 	private void doBeforeLoadData(){
 		String prodId= (String) ComponentUtil.getValue(cmbModelMacro);
 		if(prodId == "All") {
+			
 			doLineChartAll();
 		} else {
 			String groupId = "30";
 			
 			String parmgroup = groupId + prodId;
+						
 			doLineChart(parmgroup);			
 		}
 	}
@@ -149,6 +153,9 @@ public class WndLaporanTrendMacro extends SelectorComposer<Component> {
 		legend.setAlign("right");
 		legend.setVerticalAlign("middle");
 		legend.setBorderWidth(0);
+		
+		aksi = "Menampilkan chart : " + parmgroup;					
+		doLogAktfitas(aksi);
     }
 	
 	public void doLineChartAll(){
@@ -197,6 +204,10 @@ public class WndLaporanTrendMacro extends SelectorComposer<Component> {
 		legend.setAlign("right");
 		legend.setVerticalAlign("middle");
 		legend.setBorderWidth(0);
+		
+		aksi = "Menampilkan chart : All";					
+		doLogAktfitas(aksi);
+	
     }
 
 }

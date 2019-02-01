@@ -25,7 +25,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Comboitem;
@@ -149,10 +151,11 @@ public class WndSPPITest extends SelectorComposer<Component> {
 
 	private List<DTOMap> listData;
 
+	String Aksi;
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-
 		img01.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
 			public void onEvent(Event e) throws Exception {
 				doReset();
@@ -289,7 +292,9 @@ public class WndSPPITest extends SelectorComposer<Component> {
 			public void onEvent(Event e) throws Exception {
 				img09.setVisible(true);
 				int parmGrp = 2001;
-				doSave(parmGrp);
+				if (checkPrivInsert()) {
+					doSave(parmGrp);	
+				}
 
 			}
 		});
@@ -306,7 +311,9 @@ public class WndSPPITest extends SelectorComposer<Component> {
 			public void onEvent(Event e) throws Exception {
 				img11.setVisible(true);
 				int parmGrp = 2003;
-				doSave(parmGrp);
+				if (checkPrivInsert()) {
+					doSave(parmGrp);	
+				}
 			}
 		});
 
@@ -314,7 +321,9 @@ public class WndSPPITest extends SelectorComposer<Component> {
 			public void onEvent(Event e) throws Exception {
 				img12.setVisible(true);
 				int parmGrp = 2002;
-				doSave(parmGrp);
+				if (checkPrivInsert()) {
+					doSave(parmGrp);	
+				}
 			}
 		});
 		
@@ -571,8 +580,8 @@ public class WndSPPITest extends SelectorComposer<Component> {
 																	.insertData(
 																			map,
 																			"CFG_PARM");
-															System.out
-																	.println("BENAR !!");
+															Aksi = "Penambahan SPPITest "+ComponentUtil.getValue(txtParmId);
+															doLogAktfitas(Aksi);
 															MessageBox.showInformation("Data Berhasil disimpan");
 															doLoadSPPI();
 															doReset();
@@ -595,7 +604,8 @@ public class WndSPPITest extends SelectorComposer<Component> {
 								map.put("CRTUSER",
 										mapuser.getString("USERID"));
 								masterService.insertData(map, "CFG_PARM");
-								System.out.println("BENAR !!");
+								Aksi = "Penambahan SPPITest "+ComponentUtil.getValue(txtParmId);
+								doLogAktfitas(Aksi);
 								MessageBox.showInformation("Data Berhasil disimpan");
 								doLoadSPPI();
 								doReset();

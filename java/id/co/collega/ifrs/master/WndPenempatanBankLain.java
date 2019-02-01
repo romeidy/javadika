@@ -24,7 +24,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -38,6 +40,8 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 @org.springframework.stereotype.Component
 @Scope("execution")
@@ -73,10 +77,12 @@ public class WndPenempatanBankLain extends SelectorComposer<Component> {
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+	String Aksi;
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-
+		
 		btnSave.addEventListener(Events.ON_CLICK, new EventListener() {
 			public void onEvent(Event event) throws Exception {
 				doSave();
@@ -91,7 +97,9 @@ public class WndPenempatanBankLain extends SelectorComposer<Component> {
 
 		btnDelete.addEventListener(Events.ON_CLICK, new EventListener() {
 			public void onEvent(Event event) throws Exception {
-				doDelete();
+				if (checkPrivDelete()) {
+					doDelete();	
+				}
 			}
 		});
 
@@ -222,9 +230,13 @@ public class WndPenempatanBankLain extends SelectorComposer<Component> {
 	private void doSave() {
 		if (doValidation()) {
 			if (onLoad) {
-				doUpdate();
+				if (checkPrivUpdate()) {
+					doUpdate();	
+				}
 			} else {
-				doInsert();
+				if (checkPrivInsert()) {
+					doInsert();	
+				}
 			}
 		} else {
 			System.out.println("validation return false");
@@ -252,6 +264,8 @@ public class WndPenempatanBankLain extends SelectorComposer<Component> {
 										plc_master.put("CRTDATE", new Date());
 										plc_master.put("CRTUSER", authService.getUserDetails().getUserId());
 										masterService.insertData(plc_master,"PLC_MASTER");
+										Aksi = "Penambahan data No Rekening "+ComponentUtil.getValue(cmbJnsPenempatan);
+										doLogAktfitas(Aksi);
 										MessageBox.showInformation("Data berhasil di simpan.");
 										doReset();
 									} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
@@ -290,6 +304,8 @@ public class WndPenempatanBankLain extends SelectorComposer<Component> {
 								//	datas.put("CRTUSER", GlobalVariable.getInstance().get("USER_MASTER"));
 								
 								masterService.updateData(plc_master, "PLC_MASTER");
+								Aksi = "Perubahan data No Rekening "+ComponentUtil.getValue(cmbJnsPenempatan);
+								doLogAktfitas(Aksi);
 								MessageBox.showInformation("Data berhasil diupdate.");														
 								doReset();
 							} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
@@ -314,6 +330,8 @@ public class WndPenempatanBankLain extends SelectorComposer<Component> {
 								plc_master.put("ACCNBR",ComponentUtil.getValue(txtNoRekening));
 								plc_master.put("PK", "TGL_POS,PLCID,ACCNBR");
 								masterService.deleteData(plc_master, "PLC_MASTER");
+								Aksi = "Penghapusan data No Rekening "+ComponentUtil.getValue(cmbJnsPenempatan);
+								doLogAktfitas(Aksi);
 								item.detach();
 								MessageBox.showInformation("Data Berhasil Dihapus");
 								doReset();

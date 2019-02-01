@@ -11,7 +11,9 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Comboitem;
@@ -21,6 +23,8 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.master.service.MasterServices;
@@ -48,6 +52,7 @@ public class WndPendaftaranForm extends SelectorComposer<Component>{
 	
 	Boolean onLoad = false;
 	
+	String Aksi;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -85,7 +90,9 @@ public class WndPendaftaranForm extends SelectorComposer<Component>{
 		btnDelete.addEventListener(Events.ON_CLICK, new EventListener() {
             public void onEvent(Event event) throws Exception {
         		//doDelete();
-            	doBeforeDelete();
+            	if (checkPrivDelete()) {
+                	doBeforeDelete();	
+				}
             }
         });
 		
@@ -126,13 +133,17 @@ public class WndPendaftaranForm extends SelectorComposer<Component>{
 	}
 
 	
-	private void doSave(){
+	public void doSave(){
 		if (doValidation()) {
 			if(onLoad){
-				doBeforeUpdate();
+				if (checkPrivUpdate()) {
+					doBeforeUpdate();
+				}
 				//doUpdate();
 			}else{
-				doBeforeInsert();
+				if (checkPrivInsert()) {
+					doBeforeInsert();	
+				}
 				//doInsert();
 			}
 		}
@@ -325,6 +336,8 @@ public class WndPendaftaranForm extends SelectorComposer<Component>{
 				datas.put("NAMA", ComponentUtil.getValue(txtFormNm));
 				datas.put("ZUL_FILE", ComponentUtil.getValue(txtZulFile));
 				masterService.insertData(datas, "SYS_FORM");
+				Aksi = "Penambahan pada data FORM ID"+ ComponentUtil.getValue(txtFormId) +", "+ComponentUtil.getValue(txtFormNm);
+				doLogAktfitas(Aksi);
 				MessageBox.showInformation("Data berhasil di simpan");
 			}else{
 				MessageBox.showError("Data telah ada di database");
@@ -344,6 +357,8 @@ public class WndPendaftaranForm extends SelectorComposer<Component>{
 			datas.put("ZUL_FILE", ComponentUtil.getValue(txtZulFile));
 			datas.put("PK", "FORM_ID");
 			masterService.updateData(datas, "SYS_FORM");
+			Aksi = "Perubahan pada data FORM ID"+ ComponentUtil.getValue(txtFormId) +", "+ComponentUtil.getValue(txtFormNm);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data berhasil di update");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -354,10 +369,13 @@ public class WndPendaftaranForm extends SelectorComposer<Component>{
 	
 	private void doDelete(){
 		try {
+			
 			final DTOMap datas = new DTOMap();
 			datas.put("FORM_ID", ComponentUtil.getValue(txtFormId));
 			datas.put("PK", "FORM_ID");			
 			masterService.deleteData(datas, "SYS_FORM");
+			Aksi = "Penghapusan pada data FORM ID "+ ComponentUtil.getValue(txtFormId) +", "+ComponentUtil.getValue(txtFormNm);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data berhasil di hapus");
 			
 			/*Messagebox.show("Apakah Anda Yakin mau menghapus data ini .. ?", "KONFIRMASI", Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {

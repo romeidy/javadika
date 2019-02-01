@@ -27,7 +27,9 @@ import org.zkoss.zk.ui.WrongValuesException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+
+import id.co.collega.v7.seed.controller.SelectorComposer;
+
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Chart;
@@ -115,6 +117,8 @@ public class WndKonfigurasiParameter extends SelectorComposer<Component> {
 	private DTOMap CFG_SYS=(DTOMap) GlobalVariable.getInstance().get("cfgsys");
 	private DTOMap USER_MASTER=(DTOMap) GlobalVariable.getInstance().get("USER_MASTER");
 
+	String Aksi;
+	
     @Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
@@ -380,29 +384,33 @@ public class WndKonfigurasiParameter extends SelectorComposer<Component> {
 	public void doSaveOrUpdate() {
 		if (validation()) {	
 			if (onLoad){
-				Messagebox.show("Apakah Anda Yakin mau mengupdate data ini .. ?", "KONFIRMASI",
-					Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
-						@Override
-						public void onEvent(Event e) throws Exception {
-							if (Messagebox.ON_OK.equals(e.getName())) {
-								doBeforeSave();
-							} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
-								
-							}
-						}
-					});
-			}else{
-				Messagebox.show("Apakah Anda Yakin mau menyimpan data ini .. ?", "KONFIRMASI",
+				if (checkPrivUpdate()) {
+					Messagebox.show("Apakah Anda Yakin mau mengupdate data ini .. ?", "KONFIRMASI",
 						Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
 							@Override
 							public void onEvent(Event e) throws Exception {
 								if (Messagebox.ON_OK.equals(e.getName())) {
-									doBeforeSave();	
+									doBeforeSave();
 								} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
 									
 								}
 							}
-						});
+						});	
+				}
+			}else{
+				if (checkPrivInsert()) {
+					Messagebox.show("Apakah Anda Yakin mau menyimpan data ini .. ?", "KONFIRMASI",
+							Messagebox.OK | Messagebox.CANCEL, Messagebox.QUESTION, new EventListener<Event>() {
+								@Override
+								public void onEvent(Event e) throws Exception {
+									if (Messagebox.ON_OK.equals(e.getName())) {
+										doBeforeSave();	
+									} else if (Messagebox.ON_CANCEL.equals(e.getName())) {
+										
+									}
+								}
+							});	
+				}
 			}
 		}
 	}
@@ -422,6 +430,8 @@ public class WndKonfigurasiParameter extends SelectorComposer<Component> {
 		parm.put("PARMIDOTH", ComponentUtil.getValue(txtKodeLain));
 		parm.put("PK", "PARMID,PARMGRP");
 		jt2.updateData(parm, "CFG_PARM");
+		Aksi = "Perubahan pada data "+ ComponentUtil.getValue(txtKodeParameter) +" "+ComponentUtil.getValue(txtDeskripsi);
+		doLogAktfitas(Aksi);
 		MessageBox.showInformation("Data berhasil di-update.");
 		doReset();
 	}
@@ -452,6 +462,8 @@ public class WndKonfigurasiParameter extends SelectorComposer<Component> {
 		map.put("STSDT", CFG_SYS.getDate("OPEN_DATE"));
 		map.put("PARMIDOTH", ComponentUtil.getValue(txtKodeLain));
 		jt2.insertData(map, "CFG_PARM");
+		Aksi = "Penambahan data "+ ComponentUtil.getValue(txtKodeParameter) +", "+ComponentUtil.getValue(txtDeskripsi);
+		doLogAktfitas(Aksi);
 		MessageBox.showInformation("Data berhasil di-simpan.");
 		doReset();
 	}
@@ -506,6 +518,8 @@ public class WndKonfigurasiParameter extends SelectorComposer<Component> {
 			data.put("PARMID", ComponentUtil.getValue(txtKodeParameter));
 			data.put("PK", "PARMID,PARMGRP");
 			jt2.deleteData(data, "CFG_PARM");
+			Aksi = "Penghapusan data "+ ComponentUtil.getValue(txtKodeParameter) +", "+ComponentUtil.getValue(txtDeskripsi);
+			doLogAktfitas(Aksi);
 			item.detach();
 			MessageBox.showInformation("Data Berhasil Dihapus");
 			doReset();

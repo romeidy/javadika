@@ -72,14 +72,9 @@ public class WndPemeliharaanUser extends SelectorComposer<Component>{
 	
 	DTOMap mapUser=(DTOMap)GlobalVariable.getInstance().get("USER_MASTER");
 	DTOMap mapSys=(DTOMap)GlobalVariable.getInstance().get("cfgsys");
-	String menuid = (String)GlobalVariable.getInstance().get("menuid");
 	String Aksi;
-	String Aksi_final;
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
-		
-		System.out.println(menuid);
-//		doLogAktfitas(Aksi_final,menuid);
 		
 		txtUserId.addEventListener(Events.ON_OK, new EventListener() {
             public void onEvent(Event event) throws Exception {
@@ -108,7 +103,9 @@ public class WndPemeliharaanUser extends SelectorComposer<Component>{
 		btnDelete.addEventListener(Events.ON_CLICK, new EventListener() {
             public void onEvent(Event event) throws Exception {
         		//doDelete();
-            	doBeforeDelete();
+            	if (checkPrivDelete()) {
+                	doBeforeDelete();	
+				}
             }
         });
 		
@@ -234,11 +231,15 @@ public class WndPemeliharaanUser extends SelectorComposer<Component>{
 	private void doSave(){
 		if (doValidation()) {
 			if(onLoad){
+				if (checkPrivUpdate()) {
+					doCheckFirstUpdate();
+				}
 				//doUpdate();
-				doCheckFirstUpdate();
 			}else{
+				if (checkPrivInsert()) {
+					doBeforeInsert();
+				}
 				//doInsert();
-				doBeforeInsert();
 			}
 			
 			//doInsertWorkflow();
@@ -415,7 +416,8 @@ public class WndPemeliharaanUser extends SelectorComposer<Component>{
 				datas.put("USERID_PPATK", ComponentUtil.getValue(txtUserPPATK));
 				datas.put("FLGSPV", ComponentUtil.getValue(grpOtorisasi));
 				masterService.insertData(datas, "MST_USER");
-				Aksi_final = "Menyimpan Data";
+				Aksi = "Penambahan pada data USERID "+ ComponentUtil.getValue(txtUserId) +" "+ComponentUtil.getValue(txtUserNmUser);
+				doLogAktfitas(Aksi);
 				MessageBox.showInformation("Data berhasil di simpan.\nPassword sama dengan user id.");
 			}else{
 				MessageBox.showError("Data telah ada di database");
@@ -555,6 +557,8 @@ public class WndPemeliharaanUser extends SelectorComposer<Component>{
 				datas.put("FLGSPV", ComponentUtil.getValue(grpOtorisasi));
 				datas.put("PK", "USERID");
 				masterService.updateData(datas, "MST_USER");
+				Aksi = "Perubahan pad data USERID "+ ComponentUtil.getValue(txtUserId) +" "+ComponentUtil.getValue(txtUserNmUser);
+				doLogAktfitas(Aksi);
 				MessageBox.showInformation("Data berhasil di update");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -681,6 +685,8 @@ public class WndPemeliharaanUser extends SelectorComposer<Component>{
 			datas.put("USERID", ComponentUtil.getValue(txtUserId));
 			datas.put("PK", "USERID");
 			masterService.deleteData(datas, "MST_USER");
+			Aksi = "Penghapusan pada data USERID "+ ComponentUtil.getValue(txtUserId) +" "+ComponentUtil.getValue(txtUserNmUser);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data berhasil di hapus");
 		} catch (Exception e) {
 			e.printStackTrace();

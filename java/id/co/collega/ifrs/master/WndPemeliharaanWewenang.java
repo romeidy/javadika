@@ -11,7 +11,7 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -22,6 +22,8 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
+
+import com.jet.gand.services.GlobalVariable;
 
 import id.co.collega.ifrs.common.DTOMap;
 import id.co.collega.ifrs.master.service.MasterServices;
@@ -48,6 +50,7 @@ public class WndPemeliharaanWewenang extends SelectorComposer<Component>{
 	
 	Boolean onLoad = false;
 	
+	String Aksi;
 	
 	public void doAfterCompose(Component comp) throws Exception {
 		super.doAfterCompose(comp);
@@ -74,7 +77,9 @@ public class WndPemeliharaanWewenang extends SelectorComposer<Component>{
 		btnDelete.addEventListener(Events.ON_CLICK, new EventListener<Event>() {
             public void onEvent(Event event) throws Exception {
         		//doDelete();
-            	doBeforeDelete();
+            	if (checkPrivDelete()) {
+                	doBeforeDelete();	
+				}
             }
         });
 		
@@ -117,10 +122,14 @@ public class WndPemeliharaanWewenang extends SelectorComposer<Component>{
 	private void doSave(){
 		if (doValidation()) {
 			if(onLoad){
-				doBeforeUpdate();
+				if (checkPrivUpdate()) {
+					doBeforeUpdate();	
+				}
 				//doUpdate();
 			}else{
-				doBoforeInsert();
+				if (checkPrivInsert()) {
+					doBoforeInsert();	
+				}
 				//doInsert();
 			}
 		}
@@ -226,11 +235,15 @@ public class WndPemeliharaanWewenang extends SelectorComposer<Component>{
 			datas.put("ROLENM", ComponentUtil.getValue(txtKeteranganWewenang));
 			datas.put("ROLESPV", ComponentUtil.getValue(cmbRoleSpv));
 			masterService.updateData(datas, "CFG_ROLE");
+			Aksi = "Perubahan data Role Id"+ ComponentUtil.getValue(txtRoleId) +", "+ComponentUtil.getValue(txtKeteranganWewenang);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data Berhasil di Ubah");
 		}else {
 			datas.put("ROLENM", ComponentUtil.getValue(txtKeteranganWewenang) );
 			datas.put("ROLESPV", ComponentUtil.getValue(cmbRoleSpv) );
 			masterService.insertData(datas, "CFG_ROLE");
+			Aksi = "Penambahan data Role Id"+ ComponentUtil.getValue(txtRoleId) +", "+ComponentUtil.getValue(txtKeteranganWewenang);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data Berhasil Di Simpan");
 		}
 	}
@@ -374,6 +387,8 @@ public class WndPemeliharaanWewenang extends SelectorComposer<Component>{
 			datas.put("ROLEID", ComponentUtil.getValue(txtRoleId));
 			datas.put("PK", "ROLEID");
 			masterService.deleteData(datas, "CFG_ROLE");
+			Aksi = "Penghapusan data Role Id"+ ComponentUtil.getValue(txtRoleId) +", "+ComponentUtil.getValue(txtKeteranganWewenang);
+			doLogAktfitas(Aksi);
 			MessageBox.showInformation("Data berhasil di hapus");
 			
 			

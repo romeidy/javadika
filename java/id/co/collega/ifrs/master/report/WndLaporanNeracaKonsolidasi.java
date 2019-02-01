@@ -43,7 +43,6 @@ import org.zkoss.zk.ui.WrongValueException;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.event.Events;
-import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
@@ -69,6 +68,7 @@ import id.co.collega.ifrs.master.service.MasterServices;
 import id.co.collega.ifrs.util.ComponentUtil;
 import id.co.collega.ifrs.util.MessageBox;
 import id.co.collega.v7.ef.common.DataSession;
+import id.co.collega.v7.seed.controller.SelectorComposer;
 import id.co.collega.v7.seed.config.AuthenticationService;
 import id.co.collega.v7.ui.component.DialogUtil;
 import net.sf.jasperreports.engine.JRException;
@@ -118,9 +118,12 @@ public class WndLaporanNeracaKonsolidasi  extends SelectorComposer<Component>{
 	private Date openDate;
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	
+	String aksi;
+	
 	@Override
 	public void doAfterCompose(Component comp) throws Exception  {
 		super.doAfterCompose(comp);
+		
 		cmbJnsData.setSelectedIndex(0);
 		cmbJnsLaporan.setSelectedIndex(0);
 		
@@ -131,6 +134,7 @@ public class WndLaporanNeracaKonsolidasi  extends SelectorComposer<Component>{
 					throw new WrongValueException(cmbFormat,
 							"Format file tidak boleh kosong.");	
 				} else {
+					
 					doPrint();					
 				}
 			}
@@ -487,6 +491,9 @@ public class WndLaporanNeracaKonsolidasi  extends SelectorComposer<Component>{
 			e.printStackTrace();
 			MessageBox.showError(e.getMessage());
 		}
+		aksi = "Search tgl : " + txtTgl.getValue() + ", jnsData : " + 
+				cmbJnsData + ", jnsLap : " + cmbJnsLaporan;
+		doLogAktfitas(aksi);
 	}
 	
 	 private List<dtoNeraca> convert(List<DTOMap> listDataMap) {
@@ -613,6 +620,9 @@ public class WndLaporanNeracaKonsolidasi  extends SelectorComposer<Component>{
 	} else {
 			doExport();
 		}
+		aksi = "Print tgl : " + txtTgl.getValue() + ", jnsData : " + 
+				cmbJnsData + ", jnsLap : " + cmbJnsLaporan;
+		doLogAktfitas(aksi);
 	}
 	
 	public void doExport() {
